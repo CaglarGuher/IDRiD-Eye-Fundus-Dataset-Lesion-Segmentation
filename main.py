@@ -64,5 +64,5 @@ def main_task(task_config, steps, device):
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
     if email_step:
-        send_results_via_mail(log_dir)
+        #send_results_via_mail(log_dir)
 

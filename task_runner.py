@@ -60,10 +60,10 @@ task_conf['model_conf'] = model_conf
 task_conf['training_conf'] = training_conf
 task_conf['augment_conf'] = augment_conf
 
-prepare_data_step = True
-train_step = True
+prepare_data_step = False
+train_step = False
 test_step = True
-email_step = False
+email_step = True
 
 steps = [prepare_data_step,train_step,test_step,email_step]
 

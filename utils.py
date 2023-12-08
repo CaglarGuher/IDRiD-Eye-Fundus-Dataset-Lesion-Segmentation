@@ -336,6 +336,7 @@ def calculate_auc_pr(y_true, y_scores, return_curve=False):
     Returns:
         auc_pr: Area under precision recall curve.
     '''
+
     y_true_flat = y_true.flatten()
     y_scores_flat = y_scores.flatten()
 
@@ -645,7 +646,7 @@ def initialize_crop_save(dataset_conf):
         #crop_save_mask_images(f"{dataset_conf['val_mask_dir']}/{lesion}",f"{dataset_conf['val_mask_dir_cropped']}/{lesion}",crop_size,stride)
         crop_save_mask_images(f"{dataset_conf['test_mask_dir']}/{lesion}",f"{dataset_conf['test_mask_dir_cropped']}/{lesion}",crop_size,stride)
 
-def calculate_auc_pr_paper(pred_mask_dir,test_mask_dir,stride):
+def auc_pr_paper_calculation(pred_mask_dir,test_mask_dir,stride):
     # Aggregates the predictions and ground truth masks into a single array for every image
     total_result = 0
     pred_items = os.listdir(pred_mask_dir)
@@ -663,10 +664,11 @@ def calculate_auc_pr_paper(pred_mask_dir,test_mask_dir,stride):
         new_width = test_mask.shape[:2][0] - (test_mask.shape[:2][0] % stride)
         new_height = test_mask.shape[:2][1] - (test_mask.shape[:2][1] % stride)
         test_mask = cv2.resize(test_mask, (new_width ,new_height))
+        
         pred_masks.append(pred_mask)
         test_masks.append(test_mask)
     # Calculate the area under the precision-recall curve
-    auc_pr, precision, recall = calculate_auc_pr(np.array(test_masks), np.array(pred_masks), return_curve=True)
+    auc_pr, precision, recall = calculate_auc_pr(np.array(test_masks)>1, np.array(pred_masks), return_curve=True)
     return auc_pr, precision, recall
 
 
@@ -698,8 +700,8 @@ def plot_save_mismatches(dir1,dir2,save_dir):
     masks = os.listdir(dir2)
     masks = natsorted(masks)
     images = natsorted(images)
-    for image,mask in zip(images,masks):
-        print(image,mask)
+    for image,mask in tqdm(zip(images,masks),desc='Plotting mismatches'):
+        #print(image,mask)
         image_1 = cv2.imread(f"{dir1}/{image}",cv2.IMREAD_GRAYSCALE)
         mask_1 = cv2.imread(f"{dir2}/{mask}",cv2.IMREAD_GRAYSCALE)
         # check if the image and the mask are the same size

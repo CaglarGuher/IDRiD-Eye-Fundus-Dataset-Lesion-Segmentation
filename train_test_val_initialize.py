@@ -7,9 +7,10 @@ import datetime
 import shutil
 import os
 import json
-from utils import *
+from utils import auc_pr_folder_calculation,auc_pr_paper_calculation,predict_and_save_folder,merge_cropped_images,merge_cropped_arrays,plot_save_mismatches,calculate_metrics
 import torch.optim.lr_scheduler as lr_scheduler
 from torch.optim.lr_scheduler import StepLR
+from visualiser import plot_pr_curve
 
 
 
@@ -168,8 +169,14 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir)
     logging.info("Plotting and saving mismatches completed successfully.")
 
-    auc_pr_result = auc_pr_folder_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
-    logging.info("AUC-PR calculation completed successfully.")
+    #auc_pr_result = auc_pr_folder_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
+    #logging.info("AUC-PR calculation completed successfully.")
+
+    auc_pr_result_paper, precision, recall = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
+    logging.info("AUC-PR calculation according to paper completed successfully.")
+    plot_pr_curve(precision, recall, save_dir=log_dir)
+    auc_pr_result = auc_pr_result_paper
+
     
     metrics_merged = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"merged_pred_masks_{dataset_conf['data']}")
     metrics_cropped = calculate_metrics(os.path.join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']), log_dir+"pred_masks")
