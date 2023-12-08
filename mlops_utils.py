@@ -3,6 +3,7 @@ import json
 import datetime
 import cv2
 import numpy as np
+import yagmail
 
 def make_subfolder(dirname,parent_path):
     path = os.path.join(parent_path, dirname)
@@ -11,7 +12,7 @@ def make_subfolder(dirname,parent_path):
     return path + '/'
 
 def make_log_dir(parent_path = "out"):
-    os.mkdir(parent_path, exist_ok =True)
+    os.makedirs(parent_path, exist_ok =True)
     current_date = datetime.datetime.now()
     dirname = current_date.strftime("%Y_%B_%d-%H_%M_%S")
     path = make_subfolder(dirname,parent_path)
@@ -75,4 +76,17 @@ def check_and_fix_masks_dir(mask_dir):
     else:
         print(f"Masks are in correct format in {mask_dir}. Skipping mask preparation step...")
 
+def send_results_via_mail(log_dir):
+    results = os.path.join(log_dir, 'results.json')
+    model_conf = os.path.join(log_dir, 'model_conf.json')
+    training_conf = os.path.join(log_dir, 'training_conf.json')
+    augment_conf = os.path.join(log_dir, 'augment_conf.json')
+    dataset_conf = os.path.join(log_dir, 'dataset_conf.json')
+    contents = [ "Train sonuçları ve konfigürasyonu ekte yer almaktadır",
+    results, model_conf, training_conf, augment_conf, dataset_conf
+    ]
+    with yagmail.SMTP('viventedevelopment', 'yeniparrola2.1') as yag:
+        yag.send('ademgunesen+viventedev@gmail.com', 'Train Sonuçları' + log_dir, contents)
+
+    
     

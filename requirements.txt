@@ -3,3 +3,4 @@ albumentations
 segmentation-models-pytorch
 natsort
 tqdm
+yagmail

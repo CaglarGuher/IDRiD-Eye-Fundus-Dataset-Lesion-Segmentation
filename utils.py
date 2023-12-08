@@ -310,7 +310,6 @@ def colorize_mismatches(ground_truth, prediction):
     # Green (1 in both ground truth and prediction)
     green_mask = (ground_truth == 1) & (prediction == 1)
     # print number of green pixels
-    print(f"Number of green pixels: {np.sum(green_mask)}")
     colorized[green_mask] = [0, 255, 0]  # Green color
 
     # Red (1 in ground truth, 0 in prediction)
@@ -326,7 +325,7 @@ def colorize_mismatches(ground_truth, prediction):
 
 from sklearn.metrics import precision_recall_curve, auc
 
-def calculate_auc_pr(y_true, y_scores):
+def calculate_auc_pr(y_true, y_scores, return_curve=False):
     '''
     Calculate area under precision recall curve using scikit-learn.
 
@@ -342,6 +341,9 @@ def calculate_auc_pr(y_true, y_scores):
 
     precision, recall, _ = precision_recall_curve(y_true_flat, y_scores_flat)
     auc_pr = auc(recall, precision)
+
+    if return_curve:
+        return auc_pr, precision, recall
 
     return auc_pr
 
@@ -642,6 +644,30 @@ def initialize_crop_save(dataset_conf):
         crop_save_mask_images(f"{dataset_conf['train_mask_dir']}/{lesion}",f"{dataset_conf['train_mask_dir_cropped']}/{lesion}",crop_size,stride)
         #crop_save_mask_images(f"{dataset_conf['val_mask_dir']}/{lesion}",f"{dataset_conf['val_mask_dir_cropped']}/{lesion}",crop_size,stride)
         crop_save_mask_images(f"{dataset_conf['test_mask_dir']}/{lesion}",f"{dataset_conf['test_mask_dir_cropped']}/{lesion}",crop_size,stride)
+
+def calculate_auc_pr_paper(pred_mask_dir,test_mask_dir,stride):
+    # Aggregates the predictions and ground truth masks into a single array for every image
+    total_result = 0
+    pred_items = os.listdir(pred_mask_dir)
+    pred_items = natsorted(pred_items)
+    
+    test_items = os.listdir(test_mask_dir)
+    test_items = natsorted(test_items)
+    pred_masks = []
+    test_masks = []
+
+    for pred,test in zip(pred_items,test_items):
+
+        pred_mask = np.load(f"{pred_mask_dir}/{pred}")
+        test_mask = cv2.imread(f"{test_mask_dir}/{test}",cv2.IMREAD_GRAYSCALE)
+        new_width = test_mask.shape[:2][0] - (test_mask.shape[:2][0] % stride)
+        new_height = test_mask.shape[:2][1] - (test_mask.shape[:2][1] % stride)
+        test_mask = cv2.resize(test_mask, (new_width ,new_height))
+        pred_masks.append(pred_mask)
+        test_masks.append(test_mask)
+    # Calculate the area under the precision-recall curve
+    auc_pr, precision, recall = calculate_auc_pr(np.array(test_masks), np.array(pred_masks), return_curve=True)
+    return auc_pr, precision, recall
 
 
 
