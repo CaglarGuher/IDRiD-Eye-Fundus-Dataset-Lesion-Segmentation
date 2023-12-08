@@ -1,0 +1,16 @@
+__pycache__/
+.ipynb_checkpoints/
+__MACOSX/
+.DS_Store
+.vscode/
+.idea/
+venv/
+
+out/
+images/
+best_models/
+data/
+tmp/
+adem/
+caglar/
+
