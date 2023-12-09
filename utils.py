@@ -643,7 +643,7 @@ def initialize_crop_save(dataset_conf):
 
     for lesion in lesion_list:
         crop_save_mask_images(f"{dataset_conf['train_mask_dir']}/{lesion}",f"{dataset_conf['train_mask_dir_cropped']}/{lesion}",crop_size,stride)
-        #crop_save_mask_images(f"{dataset_conf['val_mask_dir']}/{lesion}",f"{dataset_conf['val_mask_dir_cropped']}/{lesion}",crop_size,stride)
+        crop_save_mask_images(f"{dataset_conf['val_mask_dir']}/{lesion}",f"{dataset_conf['val_mask_dir_cropped']}/{lesion}",crop_size,stride)
         crop_save_mask_images(f"{dataset_conf['test_mask_dir']}/{lesion}",f"{dataset_conf['test_mask_dir_cropped']}/{lesion}",crop_size,stride)
 
 def auc_pr_paper_calculation(pred_mask_dir,test_mask_dir,stride):
@@ -719,15 +719,22 @@ def plot_save_mismatches(dir1,dir2,save_dir):
         cv2.imwrite(f"{save_dir}/mismatched_images/{image}.png",colorize_mismatches(image_1>1,mask_1>1))
 
 def delete_black_masks(image_folder, mask_folder,threshold):
-    # List all files in the image and mask folders
+    print(f"Deleting black masks in {mask_folder}")
+    print(f"Deleting corresponding images in {image_folder}")
+    # List all jpg or png files in the image and mask folders
     image_files = natsorted(os.listdir(image_folder))
     mask_files = natsorted(os.listdir(mask_folder))
+    # filter out non-jpg/png files
+    image_files = [f for f in image_files if f.endswith(".jpg") or f.endswith(".png")]
+    mask_files = [f for f in mask_files if f.endswith(".jpg") or f.endswith(".png")]
+    print(f"Found {len(image_files)} images and {len(mask_files)} masks")
 
     # Pair image and mask files
     file_pairs = list(zip(image_files, mask_files))
 
     # Calculate the number of images to delete (80% of the total)
     num_images_to_delete = int(threshold * len(file_pairs))
+    print(f"Deleting {num_images_to_delete} images")
 
     # Counter for deleted images
     deleted_images = 0
@@ -746,6 +753,7 @@ def delete_black_masks(image_folder, mask_folder,threshold):
                 deleted_images += 1
             else:
                 break  # Exit the loop once the limit is reached
+    print(f"Deleted {deleted_images} images and masks")
 
 def copy_and_paste_folder(folder_path):
     # Get the parent directory and folder name

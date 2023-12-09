@@ -2,6 +2,7 @@ from utils import *
 from train_test_val_initialize import *
 from os.path import join
 from mlops_utils import make_log_dir,write_to_log,save_configs, check_and_fix_masks_dir,send_results_via_mail
+torch.manual_seed(0)
 
 
 def main_task(task_config, steps, device):
@@ -27,10 +28,8 @@ def main_task(task_config, steps, device):
         #copy_and_paste_folder("images/test/mask/cropped_ma")
 
 
-        #delete_black_masks("images/train/cropped_image","images/train/mask/cropped_ma",threshold=black_ratio)
-        #delete_black_masks("images/test/cropped_image_copy","images/test/mask/cropped_ma_copy",threshold=0)
-    
-
+        delete_black_masks(dataset_conf['train_image_dir_cropped'],join(dataset_conf['train_mask_dir_cropped'],dataset_conf['data']),threshold=dataset_conf['black_ratio'])
+        delete_black_masks(dataset_conf['val_image_dir_cropped'],join(dataset_conf['val_mask_dir_cropped'],dataset_conf['data']),threshold=dataset_conf['black_ratio'])
 
     
     model,train_loader= initialize_train_val(
@@ -44,6 +43,12 @@ def main_task(task_config, steps, device):
                                             activation = model_conf['activation'], 
                                             data = dataset_conf['data']
                                             )
+    
+    val_loader = get_test_data(model_conf['encoder'],
+                                model_conf['encoder_weight'],
+                                dataset_conf['val_image_dir_cropped'],
+                                join(dataset_conf['val_mask_dir_cropped'],dataset_conf['data']),
+                                resolution=0)
                                 
     test_loader  = get_test_data(model_conf['encoder'],
                                 model_conf['encoder_weight'],
@@ -52,14 +57,14 @@ def main_task(task_config, steps, device):
                                 resolution=0)
     if train_step:
         model = train_validate(epoch = training_conf['epoch'],
-                                    lr= training_conf['lr'],
-                                    weight_decay=training_conf['weight_decay'],
-                                    train_loader = train_loader,
-                                    valid_loader=test_loader,
-                                    encoder=model_conf['encoder'],
-                                    model = model,
-                                    device = device,
-                                    log_dir = log_dir)
+                                lr = training_conf['lr'],
+                                weight_decay = training_conf['weight_decay'],
+                                train_loader = train_loader,
+                                valid_loader =val_loader,
+                                encoder = model_conf['encoder'],
+                                model = model,
+                                device = device,
+                                log_dir = log_dir)
         
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
