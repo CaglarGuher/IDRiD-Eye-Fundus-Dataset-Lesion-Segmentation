@@ -5,6 +5,7 @@ import os
 import cv2
 import numpy as np
 import yagmail
+from os.path import join
 
 
 def make_subfolder(dirname,parent_path):
@@ -108,6 +109,7 @@ def wandb_final_log(auc_pr_result, metrics_merged, metrics_cropped):
     return logs
 
 def derive_dataset_conf_parameters(dataset_conf):
+    datasets_root = dataset_conf['dataset_root']
     if dataset_conf['denoised']:
         dir_annex = join('Denoised', f'all_{dataset_conf["denoising_size"]}')
     elif dataset_conf['preprocessed']:

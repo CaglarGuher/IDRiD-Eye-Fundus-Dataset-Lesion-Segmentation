@@ -14,6 +14,7 @@ augment_conf = {}
 
 datasets_root = "/home/adem/Desktop/Thesis/IDRiD Dataset Collection/Adamlarin Format"
 
+dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
 dataset_conf['cropped']           = True
@@ -34,7 +35,7 @@ model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
 training_conf['batch_size'] = 2
-training_conf['epoch'] = 20
+training_conf['epoch'] = 2
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 
@@ -51,7 +52,7 @@ email_step = False
 
 steps = [prepare_data_step,train_step,test_step,email_step]
 
-for batch_size in [8,4,2]:
+for batch_size in [2,1]:
     task_conf['training_conf']['batch_size'] = batch_size
     for crop_size in [512,256,128]:
         task_conf['dataset_conf']['crop_size'] = crop_size

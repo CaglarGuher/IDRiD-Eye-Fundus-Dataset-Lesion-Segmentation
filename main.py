@@ -77,8 +77,7 @@ def main_task(task_config, steps, device):
                                 encoder = model_conf['encoder'],
                                 model = model,
                                 device = device,
-                                log_dir = log_dir,
-                                wandb = wandb)
+                                log_dir = log_dir)
         
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
