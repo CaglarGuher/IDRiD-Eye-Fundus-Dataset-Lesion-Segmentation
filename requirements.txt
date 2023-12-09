@@ -5,3 +5,4 @@ natsort
 tqdm
 yagmail
 matplotlib
+wandb
