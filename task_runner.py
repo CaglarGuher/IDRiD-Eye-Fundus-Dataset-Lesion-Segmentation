@@ -20,7 +20,7 @@ dataset_conf['denoised']          = False
 dataset_conf['cropped']           = True
 dataset_conf['crop_size']         = 576
 dataset_conf['stride']            = 576
-dataset_conf['black_ratio']       = 100 # TODO: Implement this
+dataset_conf['black_ratio']       = 100
 dataset_conf['denoising_size']    = 4096
 dataset_conf['resolution']        = 0
 dataset_conf['data']              = "ma"
@@ -29,13 +29,13 @@ dataset_conf['data']              = "ma"
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
 ############################################################################################################ 
 
-model_conf['decoder']           = "Unet"
+model_conf['decoder']           = "UnetPlusPlus"
 model_conf['encoder']           = "vgg19"
 model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
 training_conf['batch_size'] = 2
-training_conf['epoch'] = 2
+training_conf['epoch'] = 40
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 training_conf["ce_weight"] = 0.5
@@ -56,13 +56,8 @@ email_step = False
 
 steps = [prepare_data_step,train_step,test_step,email_step]
 
-'''
-for batch_size in [2]:
-    task_conf['training_conf']['batch_size'] = batch_size
-    for crop_size in [512,256,128]:
-        task_conf['dataset_conf']['crop_size'] = crop_size
-        task_conf['dataset_conf']['stride'] = crop_size
-        task_conf['dataset_conf'] = derive_dataset_conf_parameters(task_conf['dataset_conf'])
-        
-'''
-main_task(task_conf,steps,device)
+
+for weight_ratio in range (0,11,1):
+    task_conf["training_conf"]["ce_weight"] = weight_ratio/10
+    task_conf["training_conf"]["dice_weight"] = 1 - weight_ratio/10
+    main_task(task_conf,steps,device)
