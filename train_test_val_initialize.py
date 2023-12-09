@@ -61,10 +61,10 @@ def initialize_model_info(data,decoder,
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
-def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir):
+def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir,dice_weight,ce_weight):
     #loss= ut.losses.DiceLoss()
-    loss = ut.losses.WeightedCombinationLoss()
-
+    loss = ut.losses.WeightedCombinationLoss(dice_weight=dice_weight,ce_weight=ce_weight)
+    
     metrics = [
         ut.metrics.IoU(threshold=0.5),
         ut.metrics.Accuracy(threshold=0.5),

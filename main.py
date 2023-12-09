@@ -1,7 +1,7 @@
 from os.path import join
 
 from mlops_utils import (check_and_fix_masks_dir, make_log_dir, save_configs,
-                         send_results_via_mail, write_to_log)
+                          write_to_log)
 from train_test_val_initialize import *
 from utils import *
 import wandb
@@ -23,7 +23,8 @@ def main_task(task_config, steps, device):
         # set the wandb project where this run will be logged
         project="ret-seg-tuning1a",
         # name the run
-        name=log_dir.split('/')[-1],
+        name=os.path.basename(os.path.dirname(log_dir)),
+
         # track hyperparameters and run metadata
         config = {**dataset_conf, **model_conf, **training_conf, **augment_conf}
     )
@@ -77,12 +78,12 @@ def main_task(task_config, steps, device):
                                 encoder = model_conf['encoder'],
                                 model = model,
                                 device = device,
-                                log_dir = log_dir)
+                                log_dir = log_dir,
+                                ce_weight=training_conf["ce_weight"],
+                                dice_weight=training_conf["dice_weight"])
         
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
-    if email_step:
-        #send_results_via_mail(log_dir)
-        pass
+
     wandb.finish()
 

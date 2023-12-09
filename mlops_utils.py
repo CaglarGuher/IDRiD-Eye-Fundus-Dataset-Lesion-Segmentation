@@ -4,7 +4,7 @@ import os
 
 import cv2
 import numpy as np
-import yagmail
+
 from os.path import join
 
 
@@ -78,18 +78,6 @@ def check_and_fix_masks_dir(mask_dir):
             cv2.imwrite(os.path.join(mask_dir, 'ex', mask_name), ex_mask)
     else:
         print(f"Masks are in correct format in {mask_dir}. Skipping mask preparation step...")
-
-def send_results_via_mail(log_dir):
-    results = os.path.join(log_dir, 'results.json')
-    model_conf = os.path.join(log_dir, 'model_conf.json')
-    training_conf = os.path.join(log_dir, 'training_conf.json')
-    augment_conf = os.path.join(log_dir, 'augment_conf.json')
-    dataset_conf = os.path.join(log_dir, 'dataset_conf.json')
-    contents = [ "Train sonuçları ve konfigürasyonu ekte yer almaktadır",
-    results, model_conf, training_conf, augment_conf, dataset_conf
-    ]
-    with yagmail.SMTP('viventedevelopment', 'yeniparrola2.1') as yag:
-        yag.send('ademgunesen+viventedev@gmail.com', 'Train Sonuçları' + log_dir, contents)
 
 def wandb_epoch_log(train_logs, valid_logs):
     logs = {}

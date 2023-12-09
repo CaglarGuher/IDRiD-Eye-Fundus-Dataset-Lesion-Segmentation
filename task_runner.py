@@ -5,14 +5,14 @@ import wandb
 from main import main_task
 from mlops_utils import derive_dataset_conf_parameters
 
-device = "cuda:0"
+device = "cuda"
 
 dataset_conf = {}
 model_conf = {}
 training_conf = {}
 augment_conf = {}
 
-datasets_root = "/home/adem/Desktop/Thesis/IDRiD Dataset Collection/Adamlarin Format"
+datasets_root = "C:/Users/PC/Desktop/IDRiD Dataset Collection/Adamlarin Format"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
@@ -38,6 +38,10 @@ training_conf['batch_size'] = 2
 training_conf['epoch'] = 2
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
+training_conf["ce_weight"] = 0.5
+training_conf["dice_weight"]= 0.5
+
+
 
 task_conf = {}
 task_conf['dataset_conf'] = dataset_conf
@@ -52,11 +56,13 @@ email_step = False
 
 steps = [prepare_data_step,train_step,test_step,email_step]
 
-for batch_size in [2,1]:
+'''
+for batch_size in [2]:
     task_conf['training_conf']['batch_size'] = batch_size
     for crop_size in [512,256,128]:
         task_conf['dataset_conf']['crop_size'] = crop_size
         task_conf['dataset_conf']['stride'] = crop_size
         task_conf['dataset_conf'] = derive_dataset_conf_parameters(task_conf['dataset_conf'])
-        main_task(task_conf,steps,device)
-
+        
+'''
+main_task(task_conf,steps,device)
