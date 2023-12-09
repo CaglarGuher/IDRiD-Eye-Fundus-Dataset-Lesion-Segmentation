@@ -1,17 +1,22 @@
-from Get_model_and_data import *
-import torch
-import segmentation_models_pytorch as smp
-from segmentation_models_pytorch import utils as ut
-import logging
 import datetime
-import shutil
-import os
 import json
-from utils import auc_pr_folder_calculation,auc_pr_paper_calculation,predict_and_save_folder,merge_cropped_images,merge_cropped_arrays,plot_save_mismatches,calculate_metrics
-import torch.optim.lr_scheduler as lr_scheduler
-from torch.optim.lr_scheduler import StepLR
-from visualiser import plot_pr_curve
+import logging
+import os
+import shutil
 
+import segmentation_models_pytorch as smp
+import torch
+import torch.optim.lr_scheduler as lr_scheduler
+from segmentation_models_pytorch import utils as ut
+from torch.optim.lr_scheduler import StepLR
+
+from Get_model_and_data import *
+from mlops_utils import wandb_epoch_log, wandb_final_log
+from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
+                   calculate_metrics, merge_cropped_arrays,
+                   merge_cropped_images, plot_save_mismatches,
+                   predict_and_save_folder)
+from visualiser import plot_pr_curve
 
 
 def initialize_train_val(
@@ -55,7 +60,7 @@ def initialize_model_info(data,decoder,
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
-def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir):
+def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir, wandb):
     #loss= ut.losses.DiceLoss()
     loss = ut.losses.WeightedCombinationLoss()
 
@@ -101,6 +106,8 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
 
             train_logs = train_epoch.run(train_loader)
             valid_logs = valid_epoch.run(valid_loader)
+
+            wandb.log(wandb_epoch_log(train_logs, valid_logs))
 
             if max_iou_score  < valid_logs['iou_score']:
                 max_iou_score =  valid_logs['iou_score']
@@ -183,6 +190,7 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     metrics_cropped = calculate_metrics(os.path.join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']), log_dir+"pred_masks")
     logging.info("Metrics calculation completed successfully.")
 
+    wandb.log(wandb_final_log(auc_pr_result, metrics_merged, metrics_cropped))
     # Save results in a json file
     results = {'auc_pr': auc_pr_result, 'metrics_merged': metrics_merged, 'metrics_cropped': metrics_cropped}
     json_file_path = os.path.join(log_dir, 'results.json')

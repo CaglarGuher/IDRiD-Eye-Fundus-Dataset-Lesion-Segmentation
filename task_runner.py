@@ -1,4 +1,7 @@
 from os.path import join
+
+import wandb
+
 from main import main_task
 
 device = "cuda:0"

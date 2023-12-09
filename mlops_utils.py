@@ -1,9 +1,11 @@
-import os
-import json
 import datetime
+import json
+import os
+
 import cv2
 import numpy as np
 import yagmail
+
 
 def make_subfolder(dirname,parent_path):
     path = os.path.join(parent_path, dirname)
@@ -88,5 +90,19 @@ def send_results_via_mail(log_dir):
     with yagmail.SMTP('viventedevelopment', 'yeniparrola2.1') as yag:
         yag.send('ademgunesen+viventedev@gmail.com', 'Train Sonuçları' + log_dir, contents)
 
+def wandb_epoch_log(train_logs, valid_logs):
+    logs = {}
+    for key, value in train_logs.items():
+        logs["train_"+key] = value
+    for key, value in valid_logs.items():
+        logs["valid_"+key] = value  
+    return logs
     
-    
+def wandb_final_log(auc_pr_result, metrics_merged, metrics_cropped):
+    logs = {}
+    logs["auc_pr"] = auc_pr_result
+    for key, value in metrics_merged.items():
+        logs["merged_"+key] = value
+    for key, value in metrics_cropped.items():
+        logs["cropped_"+key] = value  
+    return logs

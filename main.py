@@ -1,7 +1,10 @@
-from utils import *
-from train_test_val_initialize import *
 from os.path import join
-from mlops_utils import make_log_dir,write_to_log,save_configs, check_and_fix_masks_dir,send_results_via_mail
+
+from mlops_utils import (check_and_fix_masks_dir, make_log_dir, save_configs,
+                         send_results_via_mail, write_to_log)
+from train_test_val_initialize import *
+from utils import *
+
 torch.manual_seed(0)
 
 
@@ -14,6 +17,13 @@ def main_task(task_config, steps, device):
     model_conf = task_config['model_conf']
     training_conf = task_config['training_conf']
     augment_conf = task_config['augment_conf']
+    # start a new wandb run to track this script
+    wandb.init(
+        # set the wandb project where this run will be logged
+        project="ret-seg-tuning1a",
+        # track hyperparameters and run metadata
+        config = {**dataset_conf, **model_conf, **training_conf, **augment_conf}
+    )
     
 
     
@@ -64,11 +74,13 @@ def main_task(task_config, steps, device):
                                 encoder = model_conf['encoder'],
                                 model = model,
                                 device = device,
-                                log_dir = log_dir)
+                                log_dir = log_dir,
+                                wandb = wandb)
         
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
     if email_step:
         #send_results_via_mail(log_dir)
         pass
+    wandb.finish()
 
