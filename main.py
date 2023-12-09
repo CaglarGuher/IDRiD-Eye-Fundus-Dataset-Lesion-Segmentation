@@ -4,6 +4,7 @@ from mlops_utils import (check_and_fix_masks_dir, make_log_dir, save_configs,
                          send_results_via_mail, write_to_log)
 from train_test_val_initialize import *
 from utils import *
+import wandb
 
 torch.manual_seed(0)
 
