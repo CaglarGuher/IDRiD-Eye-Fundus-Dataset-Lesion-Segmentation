@@ -21,6 +21,8 @@ def main_task(task_config, steps, device):
     wandb.init(
         # set the wandb project where this run will be logged
         project="ret-seg-tuning1a",
+        # name the run
+        name=log_dir.split('/')[-1],
         # track hyperparameters and run metadata
         config = {**dataset_conf, **model_conf, **training_conf, **augment_conf}
     )

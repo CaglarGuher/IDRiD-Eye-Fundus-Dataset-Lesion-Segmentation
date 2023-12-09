@@ -7,6 +7,7 @@ import shutil
 import segmentation_models_pytorch as smp
 import torch
 import torch.optim.lr_scheduler as lr_scheduler
+import wandb
 from segmentation_models_pytorch import utils as ut
 from torch.optim.lr_scheduler import StepLR
 

@@ -106,3 +106,27 @@ def wandb_final_log(auc_pr_result, metrics_merged, metrics_cropped):
     for key, value in metrics_cropped.items():
         logs["cropped_"+key] = value  
     return logs
+
+def derive_dataset_conf_parameters(dataset_conf):
+    if dataset_conf['denoised']:
+        dir_annex = join('Denoised', f'all_{dataset_conf["denoising_size"]}')
+    elif dataset_conf['preprocessed']:
+        dir_annex = 'Preprocessed'
+    else:
+        dir_annex = 'Orjinal'
+    dataset_conf['train_image_dir']   = join(join(datasets_root, dir_annex), 'train')
+    dataset_conf['train_mask_dir']    = join(join(datasets_root, 'labels'), 'train')
+    dataset_conf['val_image_dir']     = join(join(datasets_root, dir_annex), 'val')
+    dataset_conf['val_mask_dir']      = join(join(datasets_root, 'labels'), 'val')
+    dataset_conf['test_image_dir']    = join(join(datasets_root, dir_annex), 'test')
+    dataset_conf['test_mask_dir']     = join(join(datasets_root, 'labels'), 'test')
+
+    if dataset_conf['cropped']:
+        crop_name = f"_crop{dataset_conf['crop_size']}_s{dataset_conf['stride']}"
+        dataset_conf['train_image_dir_cropped']   = dataset_conf['train_image_dir'] + crop_name
+        dataset_conf['train_mask_dir_cropped']    = dataset_conf['train_mask_dir'] + crop_name
+        dataset_conf['val_image_dir_cropped']     = dataset_conf['val_image_dir'] + crop_name
+        dataset_conf['val_mask_dir_cropped']      = dataset_conf['val_mask_dir'] + crop_name
+        dataset_conf['test_image_dir_cropped']    = dataset_conf['test_image_dir'] + crop_name
+        dataset_conf['test_mask_dir_cropped']     = dataset_conf['test_mask_dir'] + crop_name
+    return dataset_conf

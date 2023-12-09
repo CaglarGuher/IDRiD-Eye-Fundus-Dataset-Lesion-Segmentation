@@ -3,6 +3,7 @@ from os.path import join
 import wandb
 
 from main import main_task
+from mlops_utils import derive_dataset_conf_parameters
 
 device = "cuda:0"
 
@@ -24,27 +25,7 @@ dataset_conf['resolution']        = 0
 dataset_conf['data']              = "ma"
 ############################################################################################################
 # Derived parameters : Do not change these
-if dataset_conf['denoised']:
-    dir_annex = join('Denoised', f'all_{dataset_conf["denoising_size"]}')
-elif dataset_conf['preprocessed']:
-    dir_annex = 'Preprocessed'
-else:
-    dir_annex = 'Orjinal'
-dataset_conf['train_image_dir']   = join(join(datasets_root, dir_annex), 'train')
-dataset_conf['train_mask_dir']    = join(join(datasets_root, 'labels'), 'train')
-dataset_conf['val_image_dir']     = join(join(datasets_root, dir_annex), 'val')
-dataset_conf['val_mask_dir']      = join(join(datasets_root, 'labels'), 'val')
-dataset_conf['test_image_dir']    = join(join(datasets_root, dir_annex), 'test')
-dataset_conf['test_mask_dir']     = join(join(datasets_root, 'labels'), 'test')
-
-if dataset_conf['cropped']:
-    crop_name = f"_crop{dataset_conf['crop_size']}_s{dataset_conf['stride']}"
-    dataset_conf['train_image_dir_cropped']   = dataset_conf['train_image_dir'] + crop_name
-    dataset_conf['train_mask_dir_cropped']    = dataset_conf['train_mask_dir'] + crop_name
-    dataset_conf['val_image_dir_cropped']     = dataset_conf['val_image_dir'] + crop_name
-    dataset_conf['val_mask_dir_cropped']      = dataset_conf['val_mask_dir'] + crop_name
-    dataset_conf['test_image_dir_cropped']    = dataset_conf['test_image_dir'] + crop_name
-    dataset_conf['test_mask_dir_cropped']     = dataset_conf['test_mask_dir'] + crop_name
+dataset_conf = derive_dataset_conf_parameters(dataset_conf)
 ############################################################################################################ 
 
 model_conf['decoder']           = "Unet"
@@ -70,5 +51,11 @@ email_step = False
 
 steps = [prepare_data_step,train_step,test_step,email_step]
 
-main_task(task_conf,steps,device)
+for batch_size in [8,4,2]:
+    task_conf['training_conf']['batch_size'] = batch_size
+    for crop_size in [512,256,128]:
+        task_conf['dataset_conf']['crop_size'] = crop_size
+        task_conf['dataset_conf']['stride'] = crop_size
+        task_conf['dataset_conf'] = derive_dataset_conf_parameters(task_conf['dataset_conf'])
+        main_task(task_conf,steps,device)
 
