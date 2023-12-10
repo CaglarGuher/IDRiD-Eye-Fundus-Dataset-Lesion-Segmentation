@@ -18,6 +18,7 @@ from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
                    merge_cropped_images, plot_save_mismatches,
                    predict_and_save_folder)
 from visualiser import plot_pr_curve
+from loss import WeightedCombinationLoss
 
 
 def initialize_train_val(
@@ -63,7 +64,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir,dice_weight,ce_weight):
     #loss= ut.losses.DiceLoss()
-    loss = ut.losses.WeightedCombinationLoss(dice_weight=dice_weight,ce_weight=ce_weight)
+    loss = WeightedCombinationLoss(dice_weight=dice_weight,ce_weight=ce_weight)
     
     metrics = [
         ut.metrics.IoU(threshold=0.5),
