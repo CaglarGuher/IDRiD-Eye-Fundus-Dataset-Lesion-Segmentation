@@ -1,7 +1,6 @@
 import torch.nn as nn
-
-from segmentation_models_pytorch.base import base
-import segmentation_models_pytorch.losses._functional as F
+from segmentation_models_pytorch.utils import base
+import segmentation_models_pytorch.utils.functional as F
 from segmentation_models_pytorch.base.modules import Activation
 
 class WeightedCombinationLoss(base.Loss):
