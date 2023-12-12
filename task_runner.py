@@ -12,14 +12,14 @@ model_conf = {}
 training_conf = {}
 augment_conf = {}
 
-datasets_root = "C:/Users/PC/Desktop/IDRiD Dataset Collection/Adamlarin Format"
+datasets_root = "c:/Users/PC/Desktop/Short_Data"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 576
-dataset_conf['stride']            = 576
+dataset_conf['crop_size']         = 384
+dataset_conf['stride']            = 384
 dataset_conf['black_ratio']       = 100
 dataset_conf['denoising_size']    = 4096
 dataset_conf['resolution']        = 0
@@ -29,17 +29,15 @@ dataset_conf['data']              = "ma"
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
 ############################################################################################################ 
 
-model_conf['decoder']           = "UnetPlusPlus"
+model_conf['decoder']           = "Unet"
 model_conf['encoder']           = "vgg19"
 model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
-training_conf['batch_size'] = 2
-training_conf['epoch'] = 40
+training_conf['batch_size'] = 12
+training_conf['epoch'] = 35
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
-training_conf["ce_weight"] = 0.5
-training_conf["dice_weight"]= 0.5
 
 
 
@@ -56,8 +54,4 @@ email_step = False
 
 steps = [prepare_data_step,train_step,test_step,email_step]
 
-
-for weight_ratio in range (0,11,1):
-    task_conf["training_conf"]["ce_weight"] = weight_ratio/10
-    task_conf["training_conf"]["dice_weight"] = 1 - weight_ratio/10
-    main_task(task_conf,steps,device)
+main_task(task_conf,steps,device)

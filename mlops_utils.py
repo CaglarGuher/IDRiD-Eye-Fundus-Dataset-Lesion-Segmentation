@@ -103,7 +103,7 @@ def derive_dataset_conf_parameters(dataset_conf):
     elif dataset_conf['preprocessed']:
         dir_annex = 'Preprocessed'
     else:
-        dir_annex = 'Orjinal'
+        dir_annex = 'Original'
     dataset_conf['train_image_dir']   = join(join(datasets_root, dir_annex), 'train')
     dataset_conf['train_mask_dir']    = join(join(datasets_root, 'labels'), 'train')
     dataset_conf['val_image_dir']     = join(join(datasets_root, dir_annex), 'val')

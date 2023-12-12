@@ -62,10 +62,10 @@ def initialize_model_info(data,decoder,
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
-def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir,dice_weight,ce_weight):
-    #loss= ut.losses.DiceLoss()
-    loss = WeightedCombinationLoss(dice_weight=dice_weight,ce_weight=ce_weight)
-    
+def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir):
+    # Initialize with WeightedCombinationLoss
+    loss = WeightedCombinationLoss(dice_weight=1, ce_weight=0)
+
     metrics = [
         ut.metrics.IoU(threshold=0.5),
         ut.metrics.Accuracy(threshold=0.5),
@@ -74,16 +74,16 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         ut.metrics.Precision(threshold=0.5)
     ]
 
-    optimizer = torch.optim.AdamW([ 
+    optimizer = torch.optim.AdamW([
         dict(params=model.parameters(), lr=lr, weight_decay=weight_decay)
     ])
 
     plateau_scheduler = ReduceLROnPlateau(optimizer, mode='max', patience=1, factor=0.8, verbose=True)
 
     train_epoch = ut.train.TrainEpoch(
-        model=model, 
-        loss=loss, 
-        metrics=metrics, 
+        model=model,
+        loss=loss,
+        metrics=metrics,
         optimizer=optimizer,
         device=device,
         verbose=True,
@@ -91,35 +91,40 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
 
     valid_epoch = ut.train.ValidEpoch(
         model=model,
-        loss=loss, 
-        metrics=metrics, 
+        loss=loss,
+        metrics=metrics,
         device=device,
         verbose=True,
     )
+
     try:
         max_iou_score = 0
-        for i in range(0, epoch+1):
+        for i in range(0, epoch + 1):
             logging.info(f'Epoch: {i}')
             logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
 
             # Update the learning rate scheduler
-   
             plateau_scheduler.step(max_iou_score)
+
+            # Check if epoch is greater than 20 and update the loss function
+            if i >= 5:
+                loss = WeightedCombinationLoss(dice_weight=0, ce_weight=1)
+                train_epoch.loss = loss
+                valid_epoch.loss = loss
 
             train_logs = train_epoch.run(train_loader)
             valid_logs = valid_epoch.run(valid_loader)
 
             wandb.log(wandb_epoch_log(train_logs, valid_logs))
 
-            if max_iou_score  < valid_logs['iou_score']:
-                max_iou_score =  valid_logs['iou_score']
-                torch.save(model.state_dict(), os.path.join(log_dir,'best_step_model.pth'))
+            if max_iou_score < valid_logs['iou_score']:
+                max_iou_score = valid_logs['iou_score']
+                torch.save(model.state_dict(), os.path.join(log_dir, 'best_step_model.pth'))
                 print("Model is saved")
     except KeyboardInterrupt:
         print('Training interrupted.')
 
-
-    model.load_state_dict(torch.load(os.path.join(log_dir,'best_step_model.pth')))
+    model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
     print("Training completed.")
     return model
 

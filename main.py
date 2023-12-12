@@ -79,8 +79,7 @@ def main_task(task_config, steps, device):
                                 model = model,
                                 device = device,
                                 log_dir = log_dir,
-                                ce_weight=training_conf["ce_weight"],
-                                dice_weight=training_conf["dice_weight"])
+                                )
         
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
