@@ -14,4 +14,7 @@ tmp/
 adem/
 caglar/
 wandb/
-
+task_runner_0.py
+task_runner_1.py
+task_runner_2.py
+task_runner_3.py
