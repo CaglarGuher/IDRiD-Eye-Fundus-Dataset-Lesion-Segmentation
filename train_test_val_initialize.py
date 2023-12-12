@@ -18,6 +18,7 @@ from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
                    merge_cropped_images, plot_save_mismatches,
                    predict_and_save_folder)
 from visualiser import plot_pr_curve
+from loss import WeightedCombinationLoss
 
 
 def initialize_train_val(
@@ -63,7 +64,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir,dice_weight,ce_weight):
     #loss= ut.losses.DiceLoss()
-    loss = ut.losses.WeightedCombinationLoss(dice_weight=dice_weight,ce_weight=ce_weight)
+    loss = WeightedCombinationLoss(dice_weight=dice_weight,ce_weight=ce_weight)
     
     metrics = [
         ut.metrics.IoU(threshold=0.5),
@@ -169,10 +170,10 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
     logging.info("Prediction and saving completed successfully.")
 
-    merge_cropped_images(2752, 2752, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
+    merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
     logging.info("Merging cropped images completed successfully.")
 
-    merge_cropped_arrays(2752, 2752, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
+    merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
     logging.info("Merging cropped arrays completed successfully.")
 
     plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir)
