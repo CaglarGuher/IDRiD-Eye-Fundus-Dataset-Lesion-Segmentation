@@ -29,13 +29,13 @@ dataset_conf['data']              = "ma"
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
 ############################################################################################################ 
 
-model_conf['decoder']           = "Unet"
+model_conf['decoder']           = "UnetPlusPlus"
 model_conf['encoder']           = "vgg19"
 model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
-training_conf['batch_size'] = 12
-training_conf['epoch'] = 35
+training_conf['batch_size'] = 5
+training_conf['epoch'] = 48
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 

@@ -21,6 +21,37 @@ from visualiser import plot_pr_curve
 from loss import WeightedCombinationLoss
 
 
+
+seed_value = 42
+
+# 1. Set the seed for Python's built-in random module
+random.seed(seed_value)
+
+# 2. Set the seed for NumPy
+np.random.seed(seed_value)
+
+# 3. Set the seed for PyTorch (if you're using it)
+torch.manual_seed(seed_value)
+torch.cuda.manual_seed_all(seed_value)
+
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def initialize_train_val(
                batch_size,
                decoder,
@@ -64,7 +95,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir):
     # Initialize with WeightedCombinationLoss
-    loss = WeightedCombinationLoss(dice_weight=1, ce_weight=0)
+    loss = WeightedCombinationLoss(dice_weight=0, ce_weight=1)
 
     metrics = [
         ut.metrics.IoU(threshold=0.5),
@@ -78,7 +109,8 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         dict(params=model.parameters(), lr=lr, weight_decay=weight_decay)
     ])
 
-    plateau_scheduler = ReduceLROnPlateau(optimizer, mode='max', patience=1, factor=0.8, verbose=True)
+    step_scheduler = StepLR(optimizer, step_size=12, gamma=0.1)  # Step-based LR scheduler
+
 
     train_epoch = ut.train.TrainEpoch(
         model=model,
@@ -104,13 +136,8 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
             logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
 
             # Update the learning rate scheduler
-            plateau_scheduler.step(max_iou_score)
-
+  
             # Check if epoch is greater than 20 and update the loss function
-            if i >= 5:
-                loss = WeightedCombinationLoss(dice_weight=0, ce_weight=1)
-                train_epoch.loss = loss
-                valid_epoch.loss = loss
 
             train_logs = train_epoch.run(train_loader)
             valid_logs = valid_epoch.run(valid_loader)
@@ -121,6 +148,10 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
                 max_iou_score = valid_logs['iou_score']
                 torch.save(model.state_dict(), os.path.join(log_dir, 'best_step_model.pth'))
                 print("Model is saved")
+
+            # Update the step-based learning rate scheduler
+            step_scheduler.step()
+
     except KeyboardInterrupt:
         print('Training interrupted.')
 
