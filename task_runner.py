@@ -15,7 +15,7 @@ augment_conf = {}
 datasets_root = "c:/Users/PC/Desktop/Short_Data"
 
 dataset_conf['dataset_root']      = datasets_root
-dataset_conf['preprocessed']      = False
+dataset_conf['preprocessed']      = True
 dataset_conf['denoised']          = False
 dataset_conf['cropped']           = True
 dataset_conf['crop_size']         = 384
@@ -35,7 +35,7 @@ model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
 training_conf['batch_size'] = 5
-training_conf['epoch'] = 48
+training_conf['epoch'] = 40
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 

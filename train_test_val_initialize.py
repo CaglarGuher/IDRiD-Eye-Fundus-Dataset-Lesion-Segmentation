@@ -19,7 +19,7 @@ from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
                    predict_and_save_folder)
 from visualiser import plot_pr_curve
 from loss import WeightedCombinationLoss
-
+from loss import FocalLoss
 
 
 seed_value = 42
@@ -95,7 +95,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir):
     # Initialize with WeightedCombinationLoss
-    loss = WeightedCombinationLoss(dice_weight=0, ce_weight=1)
+    loss = FocalLoss()
 
     metrics = [
         ut.metrics.IoU(threshold=0.5),
@@ -109,7 +109,7 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         dict(params=model.parameters(), lr=lr, weight_decay=weight_decay)
     ])
 
-    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=5, verbose=True)  # Step-based LR scheduler
+    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.2, patience=3, verbose=True)  # Step-based LR scheduler
 
 
     train_epoch = ut.train.TrainEpoch(
@@ -132,7 +132,7 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
     try:
         max_iou_score = 0
         for i in range(0, epoch + 1):
-            
+
             scheduler.step(max_iou_score)
             logging.info(f'Epoch: {i}')
             logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
