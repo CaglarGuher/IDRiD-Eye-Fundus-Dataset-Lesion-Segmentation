@@ -560,17 +560,17 @@ def create_test_data(image_dir):
         gt_test = cv2.imread(f"{image_dir}/masks/{mask_test}",cv2.IMREAD_GRAYSCALE)
         
         ma_test = np.where(gt_test == 3,255,0)
-        he_test = np.where(gt_test == 2,255,0)
-        se_test = np.where(gt_test == 4,255,0)
-        ex_test = np.where(gt_test == 1,255,0)
+        #he_test = np.where(gt_test == 2,255,0)
+        #se_test = np.where(gt_test == 4,255,0)
+        #ex_test = np.where(gt_test == 1,255,0)
         os.makedirs("images/test/mask/ma",exist_ok=True)
-        os.makedirs("images/test/mask/ex",exist_ok=True)
-        os.makedirs("images/test/mask/se",exist_ok=True)
-        os.makedirs("images/test/mask/he",exist_ok=True)
+        #os.makedirs("images/test/mask/ex",exist_ok=True)
+        #os.makedirs("images/test/mask/se",exist_ok=True)
+        #os.makedirs("images/test/mask/he",exist_ok=True)
         cv2.imwrite(f"images/test/mask/ma/{mask_test}.png", ma_test)
-        cv2.imwrite(f"images/test/mask/ex/{mask_test}.png", ex_test)
-        cv2.imwrite(f"images/test/mask/se/{mask_test}.png", se_test)
-        cv2.imwrite(f"images/test/mask/he/{mask_test}.png", he_test)
+        #cv2.imwrite(f"images/test/mask/ex/{mask_test}.png", ex_test)
+        #cv2.imwrite(f"images/test/mask/se/{mask_test}.png", se_test)
+        #cv2.imwrite(f"images/test/mask/he/{mask_test}.png", he_test)
 
 def create_train_val_data(image_dir,split_ratio):
     original_images = os.listdir(f"{image_dir}/images")
@@ -603,39 +603,39 @@ def create_train_val_data(image_dir,split_ratio):
         gt_train = cv2.imread(f"{image_dir}/masks/{mask_train}",cv2.IMREAD_GRAYSCALE)
         
         ma_train = np.where(gt_train == 3,255,0)
-        he_train = np.where(gt_train == 2,255,0)
-        se_train = np.where(gt_train == 4,255,0)
-        ex_train = np.where(gt_train == 1,255,0)
+        #he_train = np.where(gt_train == 2,255,0)
+        #se_train = np.where(gt_train == 4,255,0)
+        #ex_train = np.where(gt_train == 1,255,0)
         os.makedirs("images/train/mask/ma",exist_ok=True)
-        os.makedirs("images/train/mask/ex",exist_ok=True)
-        os.makedirs("images/train/mask/se",exist_ok=True)
-        os.makedirs("images/train/mask/he",exist_ok=True)
+        #os.makedirs("images/train/mask/ex",exist_ok=True)
+        #os.makedirs("images/train/mask/se",exist_ok=True)
+        #os.makedirs("images/train/mask/he",exist_ok=True)
         cv2.imwrite(f"images/train/mask/ma/{mask_train}.png", ma_train)
-        cv2.imwrite(f"images/train/mask/ex/{mask_train}.png", ex_train)
-        cv2.imwrite(f"images/train/mask/se/{mask_train}.png", se_train)
-        cv2.imwrite(f"images/train/mask/he/{mask_train}.png", he_train)
+        #cv2.imwrite(f"images/train/mask/ex/{mask_train}.png", ex_train)
+        #cv2.imwrite(f"images/train/mask/se/{mask_train}.png", se_train)
+        #cv2.imwrite(f"images/train/mask/he/{mask_train}.png", he_train)
     for mask_val in val_masks:
     
         gt_val = cv2.imread(f"{image_dir}/masks/{mask_val}",cv2.IMREAD_GRAYSCALE)
         
         ma_val = np.where(gt_val == 3,255,0)
-        he_val = np.where(gt_val == 2,255,0)
-        se_val = np.where(gt_val == 4,255,0)
-        ex_val = np.where(gt_val == 1,255,0)
+        #he_val = np.where(gt_val == 2,255,0)
+        #se_val = np.where(gt_val == 4,255,0)
+        #ex_val = np.where(gt_val == 1,255,0)
         os.makedirs("images/val/mask/ma",exist_ok=True)
-        os.makedirs("images/val/mask/ex",exist_ok=True)
-        os.makedirs("images/val/mask/se",exist_ok=True)
-        os.makedirs("images/val/mask/he",exist_ok=True)
+        #os.makedirs("images/val/mask/ex",exist_ok=True)
+        #os.makedirs("images/val/mask/se",exist_ok=True)
+        #os.makedirs("images/val/mask/he",exist_ok=True)
         cv2.imwrite(f"images/val/mask/ma/{mask_val}.png", ma_val)
-        cv2.imwrite(f"images/val/mask/ex/{mask_val}.png", ex_val)
-        cv2.imwrite(f"images/val/mask/se/{mask_val}.png", se_val)
-        cv2.imwrite(f"images/val/mask/he/{mask_val}.png",he_val)
+        #cv2.imwrite(f"images/val/mask/ex/{mask_val}.png", ex_val)
+        #cv2.imwrite(f"images/val/mask/se/{mask_val}.png", se_val)
+        #cv2.imwrite(f"images/val/mask/he/{mask_val}.png",he_val)
 
 def initialize_crop_save(dataset_conf):
     crop_size = dataset_conf['crop_size']
     stride = dataset_conf['stride']
-    lesion_list = ['ma','ex','se','he']
-    
+    #lesion_list = ['ma','ex','se','he']
+    lesion_list = ["ma"]
 
     crop_save_mask_images(dataset_conf['train_image_dir'],dataset_conf['train_image_dir_cropped'],crop_size,stride)
     crop_save_mask_images(dataset_conf['val_image_dir'],dataset_conf['val_image_dir_cropped'],crop_size,stride)

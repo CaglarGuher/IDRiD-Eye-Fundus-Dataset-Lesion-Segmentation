@@ -1,7 +1,5 @@
 from os.path import join
-
 import wandb
-
 from main import main_task
 from mlops_utils import derive_dataset_conf_parameters
 
@@ -15,11 +13,11 @@ augment_conf = {}
 datasets_root = "c:/Users/PC/Desktop/Short_Data"
 
 dataset_conf['dataset_root']      = datasets_root
-dataset_conf['preprocessed']      = True
+dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 384
-dataset_conf['stride']            = 384
+dataset_conf['crop_size']         = 256
+dataset_conf['stride']            = 256
 dataset_conf['black_ratio']       = 100
 dataset_conf['denoising_size']    = 4096
 dataset_conf['resolution']        = 0
@@ -35,7 +33,7 @@ model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
 training_conf['batch_size'] = 5
-training_conf['epoch'] = 40
+training_conf['epoch'] = 1
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 

@@ -37,7 +37,7 @@ class WeightedCombinationLoss(base.Loss):
         
     
 class FocalLoss(base.Loss):
-    def __init__(self, alpha=5, gamma=0.2, reduction='mean', eps=1e-7, activation=None, ignore_channels=None, **kwargs):
+    def __init__(self, alpha=1, gamma=2, reduction='mean', eps=1e-7, activation=None, ignore_channels=None, **kwargs):
         super().__init__(**kwargs)
         self.alpha = alpha
         self.gamma = gamma

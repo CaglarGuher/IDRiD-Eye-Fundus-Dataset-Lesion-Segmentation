@@ -47,7 +47,8 @@ def save_configs(task_config,log_dir):
 
 def check_masks_dir_format(mask_dir):
     '''Check if lesion folders are in mask_dir'''
-    lesion_folders = ['ma', 'he', 'ex', 'se']
+    #lesion_folders = ['ma', 'he', 'ex', 'se']
+    lesion_folders = ["ma"]
     for lesion in lesion_folders:
         if not os.path.isdir(os.path.join(mask_dir, lesion)):
             print("Lesion folder not found: ", lesion)
@@ -58,7 +59,8 @@ def check_and_fix_masks_dir(mask_dir):
     '''Check if masks are binary and fix them if not'''
     if not check_masks_dir_format(mask_dir):
         # if lesion folders are not found, create them
-        lesion_folders = ['ma', 'he', 'ex', 'se']
+        #lesion_folders = ['ma', 'he', 'ex', 'se']
+        lesion_folders = ["ma"]
         for lesion in lesion_folders:
             os.mkdir(os.path.join(mask_dir, lesion))
         # list png files in mask_dir
@@ -68,14 +70,14 @@ def check_and_fix_masks_dir(mask_dir):
             mask_path = os.path.join(mask_dir,mask_name)
             mask = cv2.imread(mask_path,cv2.IMREAD_GRAYSCALE)
             ma_mask = np.where(mask == 3,255,0)
-            he_mask = np.where(mask == 2,255,0)
-            se_mask = np.where(mask == 4,255,0)
-            ex_mask = np.where(mask == 1,255,0)
+            #he_mask = np.where(mask == 2,255,0)
+            #se_mask = np.where(mask == 4,255,0)
+            #ex_mask = np.where(mask == 1,255,0)
             # save masks in corresponding folders
             cv2.imwrite(os.path.join(mask_dir, 'ma', mask_name), ma_mask)
-            cv2.imwrite(os.path.join(mask_dir, 'he', mask_name), he_mask)
-            cv2.imwrite(os.path.join(mask_dir, 'se', mask_name), se_mask)
-            cv2.imwrite(os.path.join(mask_dir, 'ex', mask_name), ex_mask)
+            #cv2.imwrite(os.path.join(mask_dir, 'he', mask_name), he_mask)
+            #cv2.imwrite(os.path.join(mask_dir, 'se', mask_name), se_mask)
+            #cv2.imwrite(os.path.join(mask_dir, 'ex', mask_name), ex_mask)
     else:
         print(f"Masks are in correct format in {mask_dir}. Skipping mask preparation step...")
 

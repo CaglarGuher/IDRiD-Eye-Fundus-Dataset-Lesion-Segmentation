@@ -19,38 +19,19 @@ from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
                    predict_and_save_folder)
 from visualiser import plot_pr_curve
 from loss import WeightedCombinationLoss
-from loss import FocalLoss
 
 
+
+######################ELIMINATE RANDOMNESS#####################
 seed_value = 42
-
-# 1. Set the seed for Python's built-in random module
 random.seed(seed_value)
-
-# 2. Set the seed for NumPy
 np.random.seed(seed_value)
-
-# 3. Set the seed for PyTorch (if you're using it)
 torch.manual_seed(seed_value)
 torch.cuda.manual_seed_all(seed_value)
 
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+##############################################################
 
 def initialize_train_val(
                batch_size,
@@ -93,9 +74,9 @@ def initialize_model_info(data,decoder,
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
-def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, encoder, log_dir):
+def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, log_dir,encoder):
     # Initialize with WeightedCombinationLoss
-    loss = FocalLoss()
+    loss = WeightedCombinationLoss(ce_weight=1,dice_weight=0)
 
     metrics = [
         ut.metrics.IoU(threshold=0.5),
@@ -133,7 +114,9 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         max_iou_score = 0
         for i in range(0, epoch + 1):
 
-            scheduler.step(max_iou_score)
+            if i > 3:
+                scheduler.step(max_iou_score)
+
             logging.info(f'Epoch: {i}')
             logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
 
@@ -150,6 +133,7 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
                 max_iou_score = valid_logs['iou_score']
                 torch.save(model.state_dict(), os.path.join(log_dir, 'best_step_model.pth'))
                 print("Model is saved")
+            
 
             # Update the step-based learning rate scheduler
             
