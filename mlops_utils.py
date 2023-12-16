@@ -102,16 +102,22 @@ def derive_dataset_conf_parameters(dataset_conf):
     datasets_root = dataset_conf['dataset_root']
     if dataset_conf['denoised']:
         dir_annex = join('Denoised', f'all_{dataset_conf["denoising_size"]}')
+        mask_annex = 'labels'
     elif dataset_conf['preprocessed']:
         dir_annex = 'Preprocessed'
+        mask_annex = 'labels'
+    elif dataset_conf['PBDA']:
+        dir_annex = dataset_conf['PBDA']
+        mask_annex = dataset_conf['PBDA'].replace('image', 'label')
     else:
         dir_annex = 'Original'
+        mask_annex = 'labels'
     dataset_conf['train_image_dir']   = join(join(datasets_root, dir_annex), 'train')
-    dataset_conf['train_mask_dir']    = join(join(datasets_root, 'labels'), 'train')
+    dataset_conf['train_mask_dir']    = join(join(datasets_root, mask_annex), 'train')
     dataset_conf['val_image_dir']     = join(join(datasets_root, dir_annex), 'val')
-    dataset_conf['val_mask_dir']      = join(join(datasets_root, 'labels'), 'val')
+    dataset_conf['val_mask_dir']      = join(join(datasets_root, mask_annex), 'val')
     dataset_conf['test_image_dir']    = join(join(datasets_root, dir_annex), 'test')
-    dataset_conf['test_mask_dir']     = join(join(datasets_root, 'labels'), 'test')
+    dataset_conf['test_mask_dir']     = join(join(datasets_root, mask_annex), 'test')
 
     if dataset_conf['cropped']:
         crop_name = f"_crop{dataset_conf['crop_size']}_s{dataset_conf['stride']}"

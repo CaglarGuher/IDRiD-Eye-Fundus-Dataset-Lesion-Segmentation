@@ -15,6 +15,7 @@ datasets_root = "c:/Users/PC/Desktop/Short_Data"
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
+dataset_conf['PBDA']              = 'image_zoom_blend_hd_aug3_EX60_HE0_MA100_SE0'
 dataset_conf['cropped']           = True
 dataset_conf['crop_size']         = 256
 dataset_conf['stride']            = 256
