@@ -112,16 +112,14 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         patience = 7
         max_iou_score = 0
         no_improvement_count = 0
-          # Counter for epochs without improvement
+
 
         for i in range(0, epoch + 1):
 
             logging.info(f'Epoch: {i}')
             logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
 
-            # Update the learning rate scheduler
-  
-            # Check if epoch is greater than 20 and update the loss function
+
 
             train_logs = train_epoch.run(train_loader)
             valid_logs = valid_epoch.run(valid_loader)
@@ -133,22 +131,21 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
                 torch.save(model.state_dict(), os.path.join(log_dir, 'best_step_model.pth'))
                 torch.save(optimizer.state_dict(), os.path.join(log_dir, 'best_optimizer.pth'))
                 print("Model and optimizer are saved")
-                no_improvement_count = 0  # Reset the counter
+                no_improvement_count = 0 
             else:
                 if i > 3:
                     no_improvement_count += 1
 
-                # If no improvement for 3 epochs, load the best model and optimizer
                 if no_improvement_count == 3:
                     model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
                     optimizer.load_state_dict(torch.load(os.path.join(log_dir, 'best_optimizer.pth')))
                     train_epoch.optimizer = optimizer
                     train_epoch.model = model
                     valid_epoch.model = model
-                    new_lr = optimizer.param_groups[0]["lr"] * 0.5  # You can adjust the factor as needed
-                    new_weight_decay = weight_decay * 0.5  # You can adjust the factor as needed
+                    new_lr = optimizer.param_groups[0]["lr"] * 0.5  
+                    new_weight_decay = weight_decay * 0.5  
                     
-                    # Update learning rate and weight decay in the optimizer
+                   
                     for param_group in optimizer.param_groups:
                         param_group['lr'] = new_lr
                         param_group['weight_decay'] = new_weight_decay
@@ -160,7 +157,6 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
                     print(f"No improvement for {patience} consecutive epochs. Early stopping.")
                     break
 
-            # Update the step-based learning rate scheduler
 
     except KeyboardInterrupt:
         print('Training interrupted.')
