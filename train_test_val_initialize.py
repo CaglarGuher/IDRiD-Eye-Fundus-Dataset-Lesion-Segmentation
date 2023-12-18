@@ -1,15 +1,11 @@
-import datetime
+
 import json
 import logging
 import os
-import shutil
-
-import segmentation_models_pytorch as smp
 import torch
-import torch.optim.lr_scheduler as lr_scheduler
 import wandb
 from segmentation_models_pytorch import utils as ut
-from torch.optim.lr_scheduler import StepLR
+
 
 from Get_model_and_data import *
 from mlops_utils import wandb_epoch_log, wandb_final_log
@@ -18,7 +14,7 @@ from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
                    merge_cropped_images, plot_save_mismatches,
                    predict_and_save_folder)
 from visualiser import plot_pr_curve
-from loss import WeightedCombinationLoss
+from loss import WeightedCombinationLoss,FocalLoss
 
 
 
@@ -76,7 +72,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, log_dir, encoder, freeze_encoder = False):
     # Initialize with WeightedCombinationLoss
-    loss = WeightedCombinationLoss(ce_weight=1, dice_weight=0)
+    loss = FocalLoss()
 
     metrics = [
         ut.metrics.IoU(threshold=0.5),
@@ -145,14 +141,14 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
                     if i > 3:
                         no_improvement_count += 1
 
-                    if no_improvement_count == 3:
+                    if no_improvement_count == 5:
                         model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
                         optimizer.load_state_dict(torch.load(os.path.join(log_dir, 'best_optimizer.pth')))
                         train_epoch.optimizer = optimizer
                         train_epoch.model = model
                         valid_epoch.model = model
-                        new_lr = optimizer.param_groups[0]["lr"] * 0.5  
-                        new_weight_decay = weight_decay * 0.5  
+                        new_lr = optimizer.param_groups[0]["lr"] * 0.3  
+                        new_weight_decay = weight_decay * 0.3  
                         
                     
                         for param_group in optimizer.param_groups:
@@ -235,10 +231,10 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
     logging.info("Prediction and saving completed successfully.")
 
-    merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
+    merge_cropped_images(2752,2752, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
     logging.info("Merging cropped images completed successfully.")
 
-    merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
+    merge_cropped_arrays(2752, 2752, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
     logging.info("Merging cropped arrays completed successfully.")
 
     plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir)
