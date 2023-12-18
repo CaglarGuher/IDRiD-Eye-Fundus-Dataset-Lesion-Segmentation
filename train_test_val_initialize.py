@@ -74,7 +74,7 @@ def initialize_model_info(data,decoder,
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
-def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, log_dir, encoder):
+def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, log_dir, encoder, freeze_encoder = False):
     # Initialize with WeightedCombinationLoss
     loss = WeightedCombinationLoss(ce_weight=1, dice_weight=0)
 
@@ -86,9 +86,16 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         ut.metrics.Precision(threshold=0.5)
     ]
 
-    optimizer = torch.optim.AdamW([
-        dict(params=model.parameters(), lr=lr, weight_decay=weight_decay)
-    ])
+    if freeze_encoder:
+        for param in model.encoder.parameters():
+            param.requires_grad = False
+        optimizer = torch.optim.AdamW([
+            dict(params=model.decoder.parameters(), lr=lr, weight_decay=weight_decay)
+        ])
+    else:
+        optimizer = torch.optim.AdamW([
+            dict(params=model.parameters(), lr=lr, weight_decay=weight_decay)
+        ])
 
 
     train_epoch = ut.train.TrainEpoch(
@@ -117,13 +124,13 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
 
             logging.info(f'Epoch: {i}')
             logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
-
-
+            
 
             train_logs = train_epoch.run(train_loader)
             valid_logs = valid_epoch.run(valid_loader)
+            extra_logs = {"lr": optimizer.param_groups[0]["lr"], 'weight_decay': optimizer.param_groups[0]["weight_decay"]}
 
-            wandb.log(wandb_epoch_log(train_logs, valid_logs))
+            wandb.log(wandb_epoch_log(train_logs, valid_logs, extra_logs))
 
             if max_iou_score < valid_logs['iou_score']:
                 max_iou_score = valid_logs['iou_score']

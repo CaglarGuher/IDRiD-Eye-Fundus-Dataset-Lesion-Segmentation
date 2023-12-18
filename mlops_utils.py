@@ -81,12 +81,14 @@ def check_and_fix_masks_dir(mask_dir):
     else:
         print(f"Masks are in correct format in {mask_dir}. Skipping mask preparation step...")
 
-def wandb_epoch_log(train_logs, valid_logs):
+def wandb_epoch_log(train_logs, valid_logs, extra_logs={}):
     logs = {}
     for key, value in train_logs.items():
         logs["train_"+key] = value
     for key, value in valid_logs.items():
         logs["valid_"+key] = value  
+    for key, value in extra_logs.items():
+        logs[key] = value
     return logs
     
 def wandb_final_log(auc_pr_result, metrics_merged, metrics_cropped):
