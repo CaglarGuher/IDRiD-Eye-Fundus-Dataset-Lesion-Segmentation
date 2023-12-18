@@ -109,7 +109,6 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
     )
 
     try:
-        patience = 7
         max_iou_score = 0
         no_improvement_count = 0
 
@@ -133,29 +132,44 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
                 print("Model and optimizer are saved")
                 no_improvement_count = 0 
             else:
-                if i > 3:
-                    no_improvement_count += 1
 
-                if no_improvement_count == 3:
+                if i <35:
+
+                    if i > 3:
+                        no_improvement_count += 1
+
+                    if no_improvement_count == 3:
+                        model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
+                        optimizer.load_state_dict(torch.load(os.path.join(log_dir, 'best_optimizer.pth')))
+                        train_epoch.optimizer = optimizer
+                        train_epoch.model = model
+                        valid_epoch.model = model
+                        new_lr = optimizer.param_groups[0]["lr"] * 0.5  
+                        new_weight_decay = weight_decay * 0.5  
+                        
+                    
+                        for param_group in optimizer.param_groups:
+                            param_group['lr'] = new_lr
+                            param_group['weight_decay'] = new_weight_decay
+                        print("Loading the best model and optimizer due to no improvement.")
+                        print(f"Learning rate decreased to {new_lr}, Weight decay decreased to {new_weight_decay}")
+                        
+                        no_improvement_count = 0
+                if i == 35:
                     model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
                     optimizer.load_state_dict(torch.load(os.path.join(log_dir, 'best_optimizer.pth')))
                     train_epoch.optimizer = optimizer
                     train_epoch.model = model
                     valid_epoch.model = model
-                    new_lr = optimizer.param_groups[0]["lr"] * 0.5  
-                    new_weight_decay = weight_decay * 0.5  
-                    
-                   
+                    new_lr = 1e-7
+                    new_weight_decay = 1e-7
                     for param_group in optimizer.param_groups:
-                        param_group['lr'] = new_lr
-                        param_group['weight_decay'] = new_weight_decay
-                    print("Loading the best model and optimizer due to no improvement.")
-                    print(f"Learning rate decreased to {new_lr}, Weight decay decreased to {new_weight_decay}")
-                     
-                    no_improvement_count = 0
-                if no_improvement_count == patience:
-                    print(f"No improvement for {patience} consecutive epochs. Early stopping.")
-                    break
+                            param_group['lr'] = new_lr
+                            param_group['weight_decay'] = new_weight_decay
+                            print("Last Training Part has started ")
+                            print(f"Learning rate decreased to {new_lr}, Weight decay decreased to {new_weight_decay}")
+                        
+
 
 
     except KeyboardInterrupt:

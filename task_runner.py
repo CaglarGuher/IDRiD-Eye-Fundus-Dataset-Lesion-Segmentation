@@ -15,10 +15,10 @@ datasets_root = "c:/Users/PC/Desktop/Short_Data"
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
-dataset_conf['PBDA']              = 'image_zoom_blend_hd_aug3_EX60_HE0_MA100_SE0'
+dataset_conf['PBDA']              = None
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 256
-dataset_conf['stride']            = 256
+dataset_conf['crop_size']         = 864
+dataset_conf['stride']            = 864
 dataset_conf['black_ratio']       = 100
 dataset_conf['denoising_size']    = 4096
 dataset_conf['resolution']        = 0
@@ -33,8 +33,8 @@ model_conf['encoder']           = "vgg19"
 model_conf['encoder_weight']    = "imagenet"
 model_conf['activation']        = "sigmoid"
 
-training_conf['batch_size'] = 5
-training_conf['epoch'] = 1
+training_conf['batch_size'] = 1
+training_conf['epoch'] = 50
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 
@@ -46,7 +46,7 @@ task_conf['model_conf'] = model_conf
 task_conf['training_conf'] = training_conf
 task_conf['augment_conf'] = augment_conf
 
-prepare_data_step = False
+prepare_data_step = True
 train_step = True
 test_step = True
 email_step = False
