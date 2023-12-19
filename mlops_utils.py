@@ -14,7 +14,7 @@ def make_subfolder(dirname,parent_path):
     print("Directory '%s' created" %dirname)
     return path + '/'
 
-def make_log_dir(parent_path = "out"):
+def make_log_dir(parent_path = "/content/drive/MyDrive/out"):
     os.makedirs(parent_path, exist_ok =True)
     current_date = datetime.datetime.now()
     dirname = current_date.strftime("%Y_%B_%d-%H_%M_%S")

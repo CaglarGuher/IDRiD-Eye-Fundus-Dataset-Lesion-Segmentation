@@ -72,7 +72,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_loader, log_dir, encoder, freeze_encoder = False):
     # Initialize with WeightedCombinationLoss
-    loss = FocalLoss()
+    loss = WeightedCombinationLoss(ce_weight = 1,dice_weight = 0)
 
     metrics = [
         ut.metrics.IoU(threshold=0.5),
@@ -111,7 +111,7 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         verbose=True,
     )
 
-    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.3, patience=5, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=5, verbose=True)
 
     max_iou_score = 0
 
