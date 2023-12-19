@@ -85,12 +85,12 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
     if freeze_encoder:
         for param in model.encoder.parameters():
             param.requires_grad = False
-        optimizer = torch.optim.AdamW([
-            dict(params=model.decoder.parameters(), lr=lr, weight_decay=weight_decay)
+        optimizer = torch.optim.Adam([
+            dict(params=model.decoder.parameters(), lr=lr)
         ])
     else:
-        optimizer = torch.optim.AdamW([
-            dict(params=model.parameters(), lr=lr, weight_decay=weight_decay)
+        optimizer = torch.optim.Adam([
+            dict(params=model.parameters(), lr=lr)
         ])
 
 
@@ -111,76 +111,27 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         verbose=True,
     )
 
-    try:
-        max_iou_score = 0
-        no_improvement_count = 0
+    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.3, patience=5, verbose=True)
 
+    max_iou_score = 0
 
-        for i in range(0, epoch + 1):
+    for i in range(epoch):
+        logging.info(f'Epoch: {epoch}')
+        logging.info(f'Epoch: {epoch}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
 
-            logging.info(f'Epoch: {i}')
-            logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
-            
+        train_logs = train_epoch.run(train_loader)
+        valid_logs = valid_epoch.run(valid_loader)
 
-            train_logs = train_epoch.run(train_loader)
-            valid_logs = valid_epoch.run(valid_loader)
-            extra_logs = {"lr": optimizer.param_groups[0]["lr"], 'weight_decay': optimizer.param_groups[0]["weight_decay"]}
+        wandb.log(wandb_epoch_log(train_logs, valid_logs, {"lr": optimizer.param_groups[0]["lr"]}))
 
-            wandb.log(wandb_epoch_log(train_logs, valid_logs, extra_logs))
+        if max_iou_score < valid_logs['iou_score']:
+            max_iou_score = valid_logs['iou_score']
+            torch.save(model.state_dict(), os.path.join(log_dir, 'best_model.pth'))
+            print("Best model saved")
 
-            if max_iou_score < valid_logs['iou_score']:
-                max_iou_score = valid_logs['iou_score']
-                torch.save(model.state_dict(), os.path.join(log_dir, 'best_step_model.pth'))
-                torch.save(optimizer.state_dict(), os.path.join(log_dir, 'best_optimizer.pth'))
-                print("Model and optimizer are saved")
-                no_improvement_count = 0 
-            else:
+        scheduler.step(valid_logs['iou_score'])  # Scheduler updates learning rate based on validation performance
 
-                if i <35:
-
-                    if i > 3:
-                        no_improvement_count += 1
-
-                    if no_improvement_count == 5:
-                        model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
-                        optimizer.load_state_dict(torch.load(os.path.join(log_dir, 'best_optimizer.pth')))
-                        train_epoch.optimizer = optimizer
-                        train_epoch.model = model
-                        valid_epoch.model = model
-                        new_lr = optimizer.param_groups[0]["lr"] * 0.3  
-                        new_weight_decay = weight_decay * 0.3  
-                        
-                    
-                        for param_group in optimizer.param_groups:
-                            param_group['lr'] = new_lr
-                            param_group['weight_decay'] = new_weight_decay
-                        print("Loading the best model and optimizer due to no improvement.")
-                        print(f"Learning rate decreased to {new_lr}, Weight decay decreased to {new_weight_decay}")
-                        
-                        no_improvement_count = 0
-                if i == 35:
-                    model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
-                    optimizer.load_state_dict(torch.load(os.path.join(log_dir, 'best_optimizer.pth')))
-                    train_epoch.optimizer = optimizer
-                    train_epoch.model = model
-                    valid_epoch.model = model
-                    new_lr = 1e-7
-                    new_weight_decay = 1e-7
-                    for param_group in optimizer.param_groups:
-                            param_group['lr'] = new_lr
-                            param_group['weight_decay'] = new_weight_decay
-                            print("Last Training Part has started ")
-                            print(f"Learning rate decreased to {new_lr}, Weight decay decreased to {new_weight_decay}")
-                        
-
-
-
-    except KeyboardInterrupt:
-        print('Training interrupted.')
-
-    model.load_state_dict(torch.load(os.path.join(log_dir, 'best_step_model.pth')))
-    os.remove(os.path.join(log_dir, 'best_optimizer.pth'))
-
+    model.load_state_dict(torch.load(os.path.join(log_dir, 'best_model.pth')))
     print("Training completed.")
     return model
 
