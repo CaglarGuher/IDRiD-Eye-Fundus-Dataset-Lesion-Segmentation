@@ -12,7 +12,7 @@ torch.manual_seed(0)
 def main_task(task_config, steps, device):
     prepapre_data_step,train_step,test_step,email_step = steps
 
-    log_dir = make_log_dir('out')
+    log_dir = make_log_dir()
     save_configs(task_config,log_dir)
     dataset_conf = task_config['dataset_conf']
     model_conf = task_config['model_conf']
@@ -69,7 +69,11 @@ def main_task(task_config, steps, device):
                                 dataset_conf['test_image_dir_cropped'],
                                 join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']),
                                 resolution=0)
+    
     if train_step:
+        if model_conf['pretrained_weights']:
+            model.load_state_dict(torch.load(os.path.join(model_conf['pretrained_weights'], 'best_model.pth'),map_location=torch.device(device)))
+            model.to(device)
         model = train_validate(epoch = training_conf['epoch'],
                                 lr = training_conf['lr'],
                                 weight_decay = training_conf['weight_decay'],
@@ -79,6 +83,7 @@ def main_task(task_config, steps, device):
                                 model = model,
                                 device = device,
                                 log_dir = log_dir,
+                                freeze_encoder = model_conf['freeze_encoder'],
                                 )
         
     if test_step:

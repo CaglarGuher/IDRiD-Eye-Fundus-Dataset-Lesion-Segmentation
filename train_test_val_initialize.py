@@ -111,25 +111,25 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         verbose=True,
     )
 
-    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=5, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5, verbose=True)
 
-    max_iou_score = 0
+    max_iou_score = 1
 
     for i in range(epoch):
-        logging.info(f'Epoch: {epoch}')
-        logging.info(f'Epoch: {epoch}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
+        logging.info(f'Epoch: {i}')
+        logging.info(f'Epoch: {i}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
 
         train_logs = train_epoch.run(train_loader)
         valid_logs = valid_epoch.run(valid_loader)
 
         wandb.log(wandb_epoch_log(train_logs, valid_logs, {"lr": optimizer.param_groups[0]["lr"]}))
 
-        if max_iou_score < valid_logs['iou_score']:
-            max_iou_score = valid_logs['iou_score']
+        if max_iou_score > valid_logs['weighted_combination_loss']:
+            max_iou_score = valid_logs['weighted_combination_loss']
             torch.save(model.state_dict(), os.path.join(log_dir, 'best_model.pth'))
             print("Best model saved")
 
-        scheduler.step(valid_logs['iou_score'])  # Scheduler updates learning rate based on validation performance
+        scheduler.step(valid_logs['weighted_combination_loss'])  # Scheduler updates learning rate based on validation performance
 
     model.load_state_dict(torch.load(os.path.join(log_dir, 'best_model.pth')))
     print("Training completed.")
@@ -182,10 +182,10 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
     logging.info("Prediction and saving completed successfully.")
 
-    merge_cropped_images(2752,2752, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
+    merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
     logging.info("Merging cropped images completed successfully.")
 
-    merge_cropped_arrays(2752, 2752, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
+    merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
     logging.info("Merging cropped arrays completed successfully.")
 
     plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir)
