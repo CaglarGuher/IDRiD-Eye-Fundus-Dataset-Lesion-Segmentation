@@ -14,7 +14,7 @@ datasets_root = "/home/braincreator/daniel/ademgunesen/square_format"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
-dataset_conf['denoised']          = True
+dataset_conf['denoised']          = False
 dataset_conf['PBDA']              = False
 dataset_conf['cropped']           = True
 dataset_conf['crop_size']         = 1152
@@ -28,7 +28,7 @@ dataset_conf['data']              = "ma"
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
 ############################################################################################################ 
 
-model_conf['decoder']           = "FPN"
+model_conf['decoder']           = "UnetPlusPlus"
 model_conf['encoder']           = "vgg19"
 model_conf['encoder_weight']    = "imagenet"
 model_conf['pretrained_weights']= False
@@ -48,7 +48,7 @@ task_conf['model_conf'] = model_conf
 task_conf['training_conf'] = training_conf
 task_conf['augment_conf'] = augment_conf
 
-prepare_data_step = True
+prepare_data_step = False
 train_step = True
 test_step = True
 email_step = False

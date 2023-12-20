@@ -130,6 +130,23 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
             print("Best model saved")
 
         scheduler.step(valid_logs['weighted_combination_loss'])  # Scheduler updates learning rate based on validation performance
+    
+    max_iou_score = 1
+    for i in range(10):
+        logging.info(f'Epoch: {i+epoch}')
+        logging.info(f'Epoch: {i+epoch}, Learning Rate: {optimizer.param_groups[0]["lr"]}')
+        loss = WeightedCombinationLoss(ce_weight = 0.1,dice_weight = 0.9)
+        train_epoch.loss = loss
+
+        train_logs = train_epoch.run(train_loader)
+        valid_logs = valid_epoch.run(valid_loader)
+
+        wandb.log(wandb_epoch_log(train_logs, valid_logs, {"lr": optimizer.param_groups[0]["lr"]}))
+
+        if max_iou_score > valid_logs['weighted_combination_loss']:
+            max_iou_score = valid_logs['weighted_combination_loss']
+            torch.save(model.state_dict(), os.path.join(log_dir, 'best_model.pth'))
+            print("Best model saved")
 
     model.load_state_dict(torch.load(os.path.join(log_dir, 'best_model.pth')))
     print("Training completed.")
