@@ -207,29 +207,30 @@ def crop_save_mask_images(input_image_dir,output_image_dir,crop_size,stride):
 
     if not os.path.exists(output_image_dir):
         os.makedirs(output_image_dir)
+    if len(os.listdir(output_image_dir)) == 0:
  
-    input_image_files = [f for f in os.listdir(input_image_dir) ]
-    input_image_files = natsorted(input_image_files)
-    for input_file in tqdm(input_image_files,desc=f'Cropping {input_image_dir}'):
-        input_path = os.path.join(input_image_dir, input_file)
-        vis_image = Image.open(input_path)
-        original_width, original_height = vis_image.size
-        new_width = original_width - (original_width % stride)
-        new_height = original_height - (original_height % stride)
-        vis_image = vis_image.resize((new_width, new_height))
-        original_width, original_height = vis_image.size
+        input_image_files = [f for f in os.listdir(input_image_dir) ]
+        input_image_files = natsorted(input_image_files)
+        for input_file in tqdm(input_image_files,desc=f'Cropping {input_image_dir}'):
+            input_path = os.path.join(input_image_dir, input_file)
+            vis_image = Image.open(input_path)
+            original_width, original_height = vis_image.size
+            new_width = original_width - (original_width % stride)
+            new_height = original_height - (original_height % stride)
+            vis_image = vis_image.resize((new_width, new_height))
+            original_width, original_height = vis_image.size
 
-        small_images = []
+            small_images = []
 
-        for y in range(0, original_height - crop_size + 1, stride):
-            for x in range(0, original_width - crop_size + 1, stride):
-                small_image = vis_image.crop((x, y, x + crop_size, y + crop_size))
-                small_images.append(small_image)
+            for y in range(0, original_height - crop_size + 1, stride):
+                for x in range(0, original_width - crop_size + 1, stride):
+                    small_image = vis_image.crop((x, y, x + crop_size, y + crop_size))
+                    small_images.append(small_image)
 
-        for i, small_image in enumerate(small_images):
-            
-            output_file_path = os.path.join(output_image_dir, f"{input_file}_{i + 1}.png")
-            small_image.save(output_file_path)
+            for i, small_image in enumerate(small_images):
+                
+                output_file_path = os.path.join(output_image_dir, f"{input_file}_{i + 1}.png")
+                small_image.save(output_file_path)
     
 #original input size
 #new_width = original_width - (original_width % width),new_height = original_height - (original_height % height)
@@ -632,18 +633,23 @@ def create_train_val_data(image_dir,split_ratio):
         cv2.imwrite(f"images/val/mask/he/{mask_val}.png",he_val)
 
 def initialize_crop_save(dataset_conf):
+
+
     crop_size = dataset_conf['crop_size']
     stride = dataset_conf['stride']
     lesion_list = ['ma','ex','se','he']
     
-
     crop_save_mask_images(dataset_conf['train_image_dir'],dataset_conf['train_image_dir_cropped'],crop_size,stride)
     crop_save_mask_images(dataset_conf['val_image_dir'],dataset_conf['val_image_dir_cropped'],crop_size,stride)
     crop_save_mask_images(dataset_conf['test_image_dir'],dataset_conf['test_image_dir_cropped'],crop_size,stride)
 
+
     for lesion in lesion_list:
+       
         crop_save_mask_images(f"{dataset_conf['train_mask_dir']}/{lesion}",f"{dataset_conf['train_mask_dir_cropped']}/{lesion}",crop_size,stride)
+    
         crop_save_mask_images(f"{dataset_conf['val_mask_dir']}/{lesion}",f"{dataset_conf['val_mask_dir_cropped']}/{lesion}",crop_size,stride)
+    
         crop_save_mask_images(f"{dataset_conf['test_mask_dir']}/{lesion}",f"{dataset_conf['test_mask_dir_cropped']}/{lesion}",crop_size,stride)
 
 def auc_pr_paper_calculation(pred_mask_dir,test_mask_dir,stride):
@@ -734,13 +740,12 @@ def delete_black_masks(image_folder, mask_folder,threshold):
 
     # Calculate the number of images to delete (80% of the total)
     num_images_to_delete = int(threshold * len(file_pairs))
-    print(f"Deleting {num_images_to_delete} images")
+    print(f"Deleting {num_images_to_delete} mask")
 
     # Counter for deleted images
     deleted_images = 0
 
     for image_file, mask_file in file_pairs:
-        image_path = os.path.join(image_folder, image_file)
         mask_path = os.path.join(mask_folder, mask_file)
 
         # Check if the mask image is completely black
@@ -748,12 +753,11 @@ def delete_black_masks(image_folder, mask_folder,threshold):
         if not any(mask_image.getdata()):
             # Delete the corresponding image and mask only if the limit is not reached
             if deleted_images < num_images_to_delete:
-                os.remove(image_path)
                 os.remove(mask_path)
                 deleted_images += 1
             else:
                 break  # Exit the loop once the limit is reached
-    print(f"Deleted {deleted_images} images and masks")
+    print(f"Deleted {deleted_images}masks")
 
 def copy_and_paste_folder(folder_path):
     # Get the parent directory and folder name

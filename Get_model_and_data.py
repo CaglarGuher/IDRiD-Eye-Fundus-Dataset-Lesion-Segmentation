@@ -21,11 +21,11 @@ class Dataset(BaseDataset):
             augmentation=None,
             preprocessing=None,
     ):
-        self.image_ids = natsorted(os.listdir(images_dir))
-        self.mask_ids = natsorted(os.listdir(masks_dir))
+        self.masks_ids = natsorted(os.listdir(masks_dir))
         self.augmentation = augmentation
-        self.images_fps = [os.path.join(images_dir, image_id) for image_id in self.image_ids]
-        self.masks_fps = [os.path.join(masks_dir, mask_id) for mask_id in self.mask_ids]
+        
+        self.masks_fps = [os.path.join(masks_dir, mask_id) for mask_id in self.masks_ids ]
+        self.images_fps = [os.path.join(images_dir, image_id) for image_id in self.masks_ids]
         self.augmentation = augmentation
         self.preprocessing = preprocessing
 
@@ -45,7 +45,7 @@ class Dataset(BaseDataset):
         return image, mask
 
     def __len__(self):
-        return len(self.image_ids)
+        return len(self.masks_ids)
 
 
 def get_train_val_data_and_model(encoder,
