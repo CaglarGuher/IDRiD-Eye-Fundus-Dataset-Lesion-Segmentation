@@ -710,17 +710,6 @@ def plot_save_mismatches(dir1,dir2,save_dir,mismatched_images):
         image_1 = cv2.imread(f"{dir1}/{image}",cv2.IMREAD_GRAYSCALE)
         mask_1 = cv2.imread(f"{dir2}/{mask}",cv2.IMREAD_GRAYSCALE)
         # check if the image and the mask are the same size
-        if image_1.shape == mask_1.shape:
-            pass
-        else:
-            print(f"Image and mask {image} have different shapes: {image_1.shape} and {mask_1.shape}")
-            continue
-        # check if mask is binary
-        if np.array_equal(np.unique(mask_1), np.array([0, 255])):
-            pass
-        else:
-            print(f"Mask {mask} is not binary")
-            continue
         cv2.imwrite(f"{save_dir}/{mismatched_images}/{image}.png",colorize_mismatches(image_1>1,mask_1>1))
 
 def delete_black_masks(image_folder, mask_folder,threshold):
