@@ -91,14 +91,9 @@ def wandb_epoch_log(train_logs, valid_logs, extra_logs={}):
         logs[key] = value
     return logs
     
-def wandb_final_log(auc_pr_result,auc_pr_caglar ,metrics_merged, metrics_cropped,metrics_caglar):
+def wandb_final_log(auc_pr_caglar ,metrics_caglar):
     logs = {}
-    logs["auc_pr"] = auc_pr_result
     logs["auc_pr_caglar"] = auc_pr_caglar
-    for key, value in metrics_merged.items():
-        logs["merged_"+key] = value
-    for key, value in metrics_cropped.items():
-        logs["cropped_"+key] = value  
     for key, value in metrics_caglar.items():
         logs["caglar_"+key] = value 
     return logs

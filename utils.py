@@ -776,12 +776,14 @@ def calculate_save_latest_pred_and_prob(dir_img,out_pred,out_prob,model,device,s
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         prob = patched_predict(img=image,model= model,window_size= stride,sttride=half_stride,device=device,encoder=encoder,encoder_weight=encoder_weight)
-        pred = Image.fromarray((prob * 255).astype('uint8'))
+        binary_image = (prob >= 0.5).astype('uint8') * 255
+        binary_image = Image.fromarray(binary_image)
+
         output_path_mask = os.path.join(out_pred,img)
         output_path_probs = os.path.join(out_prob, f"{img}_probs.npy")
         np.save(output_path_probs, prob)
-        pred.save(output_path_mask)
-    print("latest predictions and probabilities are saved")
+        binary_image.save(output_path_mask)
+    print("caglar predictions and probabilities are saved")
 
 def unpad_image(padded_image, original_size):
     target_height, target_width = padded_image.shape[:2]

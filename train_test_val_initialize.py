@@ -146,39 +146,39 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     logging.info("Caglar process finished successfully.") 
      
     # First predict and save cropped image prediction masks
-    predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
-    logging.info("Prediction and saving completed successfully.")
+    #predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
+    #logging.info("Prediction and saving completed successfully.")
 
     
-    logging.info("calculate_save_latest_pred_and_prob completed successfully.")
-    merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
-    logging.info("Merging cropped images completed successfully.")
+    #logging.info("calculate_save_latest_pred_and_prob completed successfully.")
+    #merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
+    #logging.info("Merging cropped images completed successfully.")
 
-    merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
-    logging.info("Merging cropped arrays completed successfully.")
+    #merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
+    #logging.info("Merging cropped arrays completed successfully.")
 
     plot_save_mismatches(log_dir+f"pred_masks_caglar_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir,mismatched_images="mismatched_images_caglar")
     logging.info("Plotting and saving mismatches completed successfully.")
-    plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir,mismatched_images="mismatched_images")
+    #plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir,mismatched_images="mismatched_images")
     #auc_pr_result = auc_pr_folder_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
     #logging.info("AUC-PR calculation completed successfully.")
 
-    auc_pr_result_paper, precision, recall = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
+    #auc_pr_result_paper, precision, recall = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
     auc_pr_result_paper_caglar, precision_caglar, recall_caglar = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"pred_probs_caglar_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
     logging.info("AUC-PR calculation according to paper completed successfully.")
-    auc_pr_result = auc_pr_result_paper
+    #auc_pr_result = auc_pr_result_paper
 
     
-    metrics_merged = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"merged_pred_masks_{dataset_conf['data']}")
+    #metrics_merged = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"merged_pred_masks_{dataset_conf['data']}")
 
-    metrics_cropped = calculate_metrics(os.path.join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']), log_dir+"pred_masks")
+    #metrics_cropped = calculate_metrics(os.path.join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']), log_dir+"pred_masks")
 
     metrics_caglar = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"pred_masks_caglar_{dataset_conf['data']}")
     logging.info("Metrics calculation completed successfully.")
 
-    wandb.log(wandb_final_log(auc_pr_result=auc_pr_result,auc_pr_caglar=auc_pr_result_paper_caglar,metrics_merged=metrics_merged, metrics_cropped=metrics_cropped,metrics_caglar=metrics_caglar))
+    wandb.log(wandb_final_log(auc_pr_caglar=auc_pr_result_paper_caglar,metrics_caglar=metrics_caglar))
     # Save results in a json file
-    results = { 'auc_pr': auc_pr_result,"auc_pr_caglar":auc_pr_result_paper_caglar,'metrics_merged': metrics_merged, 'metrics_cropped': metrics_cropped,"metrics_caglar":metrics_caglar}
+    results = { "auc_pr_caglar":auc_pr_result_paper_caglar,"metrics_caglar":metrics_caglar}
     json_file_path = os.path.join(log_dir, 'results.json')
     with open(json_file_path, 'w') as json_file:
         json.dump(results, json_file, indent=4)
