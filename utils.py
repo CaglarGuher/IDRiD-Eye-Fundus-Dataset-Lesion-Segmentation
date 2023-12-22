@@ -695,13 +695,12 @@ def auc_pr_folder_calculation(pred_mask_dir,test_mask_dir,stride):
         new_height = test_mask.shape[:2][1] - (test_mask.shape[:2][1] % stride)
         test_mask = cv2.resize(test_mask, (new_width ,new_height))
         result = calculate_auc_pr(test_mask>1,pred_mask)
-        print(result)
         total_result = total_result+result
     auc_pr_average_result = total_result/len(pred_items)
     return auc_pr_average_result
 
-def plot_save_mismatches(dir1,dir2,save_dir):
-    os.makedirs(f"{save_dir}/mismatched_images",exist_ok=True)
+def plot_save_mismatches(dir1,dir2,save_dir,mismatched_images):
+    os.makedirs(f"{save_dir}/{mismatched_images}",exist_ok=True)
     images = os.listdir(dir1)
     masks = os.listdir(dir2)
     masks = natsorted(masks)
@@ -722,7 +721,7 @@ def plot_save_mismatches(dir1,dir2,save_dir):
         else:
             print(f"Mask {mask} is not binary")
             continue
-        cv2.imwrite(f"{save_dir}/mismatched_images/{image}.png",colorize_mismatches(image_1>1,mask_1>1))
+        cv2.imwrite(f"{save_dir}/{mismatched_images}/{image}.png",colorize_mismatches(image_1>1,mask_1>1))
 
 def delete_black_masks(image_folder, mask_folder,threshold):
     print(f"Deleting black masks in {mask_folder}")
@@ -776,7 +775,147 @@ def copy_and_paste_folder(folder_path):
     except Exception as e:
         print(f"Error copying folder: {e}")
 
-        
+def calculate_save_latest_pred_and_prob(dir_img,out_pred,out_prob,model,device,stride,encoder,encoder_weight):
+    os.makedirs(out_pred, exist_ok=True)
+    os.makedirs(out_prob, exist_ok=True)
+    half_stride = stride//2
+
+    imgs = natsorted(os.listdir(dir_img))
+
+    for img in tqdm(imgs,desc ="predicting masks with caglar method"):
+        image_path = os.path.join(dir_img, img)
+        image = cv2.imread(image_path)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        prob = patched_predict(img=image,model= model,window_size= stride,sttride=half_stride,device=device,encoder=encoder,encoder_weight=encoder_weight)
+        pred = Image.fromarray((prob * 255).astype('uint8'))
+        output_path_mask = os.path.join(out_pred,img)
+        output_path_probs = os.path.join(out_prob, f"{img}_probs.npy")
+        np.save(output_path_probs, prob)
+        pred.save(output_path_mask)
+    print("latest predictions and probabilities are saved")
+
+def unpad_image(padded_image, original_size):
+    target_height, target_width = padded_image.shape[:2]
+    original_height, original_width = original_size,original_size
+    pad_height = target_height - original_height
+    pad_width = target_width - original_width
+
+  
+    if pad_height > 0:
+        padded_image = padded_image[:-pad_height, :]
+    if pad_width > 0:
+        padded_image = padded_image[:, :-pad_width]
+
+    return padded_image
+def pad_image(image, target_size, pad_value=0):
+    height, width = image.shape[:2]
+    target_height, target_width = target_size
+
+
+    pad_height = target_height - (height % target_height)
+    pad_width = target_width - (width % target_width)
+
+   
+    padded_image = np.pad(image, ((0, pad_height), (0, pad_width), (0, 0)), mode='constant', constant_values=pad_value)
+
+    return padded_image
+def patched_predict(img,model, window_size,sttride,device,encoder,encoder_weight):
+    
+    img_pad = pad_image(img,(window_size,window_size),0)
+  
+    bound = (window_size - sttride)//2
+    #print(img.shape[0],img.shape[1],img.shape[2])
+    fullsize_pred = np.zeros((img_pad.shape[0], img_pad.shape[1]))
+    #tmp_arr = np.full((img.shape[0], img.shape[1]), channel-1)
+    #fullsize_pred = y_pred=to_categorical(tmp_arr, num_classes=channel)
+
+    row=(img_pad.shape[0] - 2*bound)//sttride
+    column=(img_pad.shape[1] - 2*bound)//sttride
+    #model_class = util.load_model('/home/vivente/Desktop/TEZ/Code/segmentation/out_classification/2021_November_27-15_57_51/fcn_trained_model')
+    #model_class = 0
+    
+    for i in range(row):
+        for j in range(column):
+            #print(i,j)
+            x_start = (i*sttride)
+            x_stop = x_start + window_size
+            y_start = (j*sttride)
+            y_stop = y_start + window_size
+            bx_start = x_start + bound
+            bx_stop  = x_stop - bound
+            by_start = y_start + bound
+            by_stop  = y_stop - bound
+            #print(x_start,x_stop,y_start,y_stop)
+            #print(bx_start,bx_stop,by_start,by_stop)
+            pred_in = img_pad[x_start:x_stop, y_start:y_stop,:]
+            preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder,encoder_weight)
+            sample = get_preprocessing(preprocessing_fn,0)(image=pred_in)
+            pred_in = sample["image"]
+            pred_in = torch.from_numpy(pred_in).to(device).unsqueeze(0)
+            with torch.no_grad():
+                part_pred = model.predict(pred_in).cpu().numpy().astype(np.float32)
+    
+            
+            #part_pred_class = model_class.predict(np.reshape(pred_in, (1,window_size, window_size, 3)))
+            #if(part_pred_class<0.5
+            #if(y_patch.max()!=0):
+            #    part_pred = model.predict(np.reshape(pred_in, (1,window_size, window_size, 3)))
+            #else:
+            #    part_pred = background_array
+            part_pred = np.reshape(part_pred, (window_size, window_size))
+            #print(np.shape(part_pred))
+            ################ Koseler ###############
+            if(i==0 and j== 0):                     #####baslangic kösesi
+                valid_part = part_pred[0:window_size - bound, 0:window_size - bound]
+                #print(np.shape(valid_part))
+                fullsize_pred[0:bx_stop, 0:by_stop] = valid_part
+            elif(i==0 and j== column-1):            #####sag kose
+                valid_part = part_pred[0:window_size - bound, bound:window_size]
+                #print(np.shape(valid_part))
+                fullsize_pred[0:bx_stop, by_start:y_stop] = valid_part
+            elif(i==row-1 and j==column-1):         ####sag alt kose
+                valid_part = part_pred[bound:window_size, bound:window_size]
+                #print(np.shape(valid_part))
+                fullsize_pred[bx_start:x_stop, by_start:y_stop] = valid_part
+            elif(i==row-1 and j==0):                ####sol alt kose
+                valid_part = part_pred[bound:window_size, 0:window_size - bound]
+                #print(np.shape(valid_part))
+                fullsize_pred[bx_start:x_stop, y_start:by_stop] = valid_part
+            ################ Kenarlar ##############
+            elif(i==0 and j!=0 and j!= column-1):   #####ust kenar
+                valid_part = part_pred[0:window_size - bound, bound:window_size - bound]
+                #print(np.shape(valid_part))
+                fullsize_pred[0:bx_stop, by_start:by_stop] = valid_part
+            elif(j==0 and i!=0 and i!=row-1):       #####sol kenar
+                valid_part = part_pred[bound:window_size - bound, 0:window_size - bound]
+                #print(np.shape(valid_part))
+                fullsize_pred[bx_start:bx_stop, 0:by_stop] = valid_part
+            elif(i==row-1 and j!=column-1 and j!=0):####alt kenar
+                valid_part = part_pred[bound:window_size, bound:window_size - bound]
+                #print(np.shape(valid_part))
+                fullsize_pred[bx_start:x_stop, by_start:by_stop] = valid_part
+            elif(j==column-1 and i!=row-1 and i!=0):#####sag kenar
+                valid_part = part_pred[bound:window_size - bound, bound:window_size]
+                #print(np.shape(valid_part))
+                fullsize_pred[bx_start:bx_stop, by_start:y_stop] = valid_part
+
+            else:
+                valid_part = part_pred[bound:window_size - bound, bound:window_size - bound]
+                #print(np.shape(valid_part))
+                fullsize_pred[bx_start:bx_stop, by_start:by_stop] = valid_part
+
+        unpad_fullsize_pred = unpad_image(fullsize_pred,img.shape[1])
+
+    '''
+    print("Full size prediction completed")
+    colour_img_pred = util.colorize_binary_img(fullsize_pred)
+    plt.imshow(colour_img_pred)
+    plt.show()
+    '''
+
+    return np.asarray(unpad_fullsize_pred)
+
+
 def get_augmentations():
     train_transform = [
 

@@ -14,7 +14,7 @@ def make_subfolder(dirname,parent_path):
     print("Directory '%s' created" %dirname)
     return path + '/'
 
-def make_log_dir(parent_path = "/content/drive/MyDrive/out"):
+def make_log_dir(parent_path ="/content/drive/MyDrive/out"):
     os.makedirs(parent_path, exist_ok =True)
     current_date = datetime.datetime.now()
     dirname = current_date.strftime("%Y_%B_%d-%H_%M_%S")
@@ -91,13 +91,16 @@ def wandb_epoch_log(train_logs, valid_logs, extra_logs={}):
         logs[key] = value
     return logs
     
-def wandb_final_log(auc_pr_result, metrics_merged, metrics_cropped):
+def wandb_final_log(auc_pr_result,auc_pr_caglar ,metrics_merged, metrics_cropped,metrics_caglar):
     logs = {}
     logs["auc_pr"] = auc_pr_result
+    logs["auc_pr_caglar"] = auc_pr_caglar
     for key, value in metrics_merged.items():
         logs["merged_"+key] = value
     for key, value in metrics_cropped.items():
         logs["cropped_"+key] = value  
+    for key, value in metrics_caglar.items():
+        logs["caglar_"+key] = value 
     return logs
 
 def derive_dataset_conf_parameters(dataset_conf):

@@ -10,19 +10,19 @@ model_conf = {}
 training_conf = {}
 augment_conf = {}
 
-datasets_root = "c:/Users/PC/Desktop/Short_Data"
+datasets_root = "/content/square"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
 dataset_conf['PBDA']              = False
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 512
-dataset_conf['stride']            = 512
+dataset_conf['crop_size']         = 1152
+dataset_conf['stride']            = 1152
 dataset_conf['black_ratio']       = 100
 dataset_conf['denoising_size']    = 4096
 dataset_conf['resolution']        = 0
-dataset_conf['data']              = "he"
+dataset_conf['data']              = "se"
 ############################################################################################################
 # Derived parameters : Do not change these
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
@@ -35,8 +35,8 @@ model_conf['pretrained_weights']= False
 model_conf['freeze_encoder']    = False
 model_conf['activation']        = "sigmoid"
 
-training_conf['batch_size'] = 1
-training_conf['epoch'] = 2
+training_conf['batch_size'] = 2
+training_conf['epoch'] =1
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 
