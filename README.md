@@ -1,18 +1,18 @@
-# EXPLANATION OF THE DISEASE
+## EXPLANATION OF THE DISEASE
 
 Diabetic retinopathy (DR) is a leading cause of blindness in adults due to diabetes, affecting over 400 million people worldwide. Early diagnosis through fundus photography is crucial for effective treatment. However, there's inconsistency among specialists in diagnosing DR due to the lack of specific criteria for classifying its stages.
 
 **Shows inconsistency among doctors in assessing DR stages.**
 
-## MICROANEURYSMS
+### MICROANEURYSMS
 
 Microaneurysms are the earliest signs of DR, appearing as small, round, dark red dots. They can be up to 125 micrometers in size, smaller than the thickest blood vessels. See Figure 3 for an example.
 
-## HEMORRHAGES
+### HEMORRHAGES
 
 Hemorrhages result from the rupture of microaneurysms or blood vessels, causing bleeding. They are usually larger than microaneurysms and vary in shape. Unlike microaneurysms, they may not have sharp borders or colors. See Figure 4 for an example.
 
-## EXUDATES
+### EXUDATES
 
 Exudates refer to the leakage of fluids, proteins, and other substances from retinal blood vessels. There are various types, including hard exudates and cotton wool spots. Hard exudates appear as small, yellow-white deposits, while cotton wool spots are cloud-like, fuzzy, white, or gray lesions observed in the retina. See Figure 5 for examples.
 
@@ -37,7 +37,7 @@ DR has two main stages: proliferative and non-proliferative, with the non-prolif
 
 These models are widely used in biomedical imaging due to their effectiveness in segmenting images, including those related to diabetic retinopathy.
 
-## RESULT COMPARISON FOR PREVIOUS STUDIES
+### RESULT COMPARISON FOR PREVIOUS STUDIES
 
 Table 1 presents results of studies on the IDRiD dataset, showing AUPR for various lesion types.
 
@@ -51,21 +51,21 @@ Table 1 presents results of studies on the IDRiD dataset, showing AUPR for vario
 | PBDA              | 86.43     | 71.53     | 53.41     | 73.07     | 71.11   |
 | PBDA (UNet++)     | 81.04     | 64.08     | 49.17     | 68.88     | 65.48   |
 
-## PROJECT
+### PROJECT
 
 Preprocessing operations, shown in Figures 8 and 9, are used.
 
-### NOISE REDUCTION
+#### NOISE REDUCTION
 
 The BSRGAN model is used for noise reduction, producing efficient results.
 
 The examples for the different upscaling models along with the bsrgan is shown in below. The results for eye fundus images can be seen.
 
-### CROPPING AND SLIDING WINDOW TECHNIQUES
+#### CROPPING AND SLIDING WINDOW TECHNIQUES
 
 To address the limited number of annotated images in medical datasets like retinal images, a cropping strategy is used to resize the images into 576x576-pixel patches, balancing dataset size and information content. in order to crop the images by 576x576 the images are reshaped in to 3456x3456 with adding black borders as it can be seen in.
 
-### SLIDING WINDOW TECHNIQUE
+#### SLIDING WINDOW TECHNIQUE
 
 The sliding window technique is then applied with a specified overlap to augment the dataset, ensuring lesion coverage while increasing the diversity of training samples.
 
@@ -74,13 +74,13 @@ The sliding window technique is then applied with a specified overlap to augment
 | Central         | 0.80     | 0.58      | 0.43   | 0.49     | 0.34|
 | Peripheral      | 0.81     | 0.57      | 0.39   | 0.46     | 0.33|
 
-### CENTER MERGE ALGORITHM
+#### CENTER MERGE ALGORITHM
 
 Patches created by sliding a window over the image were merged to form a complete prediction image. The center merge algorithm, shown in Figure 5.3, used only the center region of each patch for composition.
 
 The model's edge detection is weaker due to partial lesions at the edges, which affects pixel adjacency and lesion structure. To address this, only the center part of the patches was used.
 
-### PBDA (POISSON BLEND DATA AUGMENTATION) METHOD
+#### PBDA (POISSON BLEND DATA AUGMENTATION) METHOD
 
 The PBDA method seamlessly integrates synthetic lesions into retinal images, enhancing dataset diversity. Small lesion images with masks are placed in various positions within the retinal images, and the Poisson blending method is used to ensure realistic integration. Random transformations are applied to the synthetic lesions to increase diversity and prevent overfitting. This method not only introduces lesions but also creates variations of retinal images, contributing to the model's robustness.
 
