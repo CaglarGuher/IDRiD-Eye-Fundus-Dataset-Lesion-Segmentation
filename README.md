@@ -22,7 +22,8 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
 - 
 - Set the activation function (e.g., sigmoid, relu).
 
-- to see the full list of encoder ,decoder with preferable activation functions check "Segmentation Models Pytorch" repository([Link to Source](https://github.com/qubvel/segmentation_models.pytorch))
+- to see the full list of encoder ,decoder with preferable activation functions check "Segmentation Models Pytorch" repository
+  ([Link to Source](https://github.com/qubvel/segmentation_models.pytorch))
 - Adjust other parameters like batch size, epochs, learning rate, and weight decay as needed.
 
 ### Step 4: Run the Code
