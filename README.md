@@ -25,16 +25,7 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
 - To see the full list of encoder ,decoder with preferable activation functions check the original repository
   [Segmentation Models Pytorch](https://github.com/qubvel/segmentation_models.pytorch)
 
-```
-@misc{Iakubovskii:2019,
-  Author = {Pavel Iakubovskii},
-  Title = {Segmentation Models Pytorch},
-  Year = {2019},
-  Publisher = {GitHub},
-  Journal = {GitHub repository},
-  Howpublished = {\url{https://github.com/qubvel/segmentation_models.pytorch}}
-}
-```
+
 - Adjust other parameters like batch size, epochs, learning rate, and weight decay as needed.
 
 ### Step 4: Run the Code
@@ -271,4 +262,27 @@ Including healthy data did not significantly improve the model's performance for
 | ------------ | -------- | -------- | ----------| ------ | --- | ------ |
 | PBDA         | 0.8174   | 0.8800   | 0.8520    | 0.7855 | 0.7526 | 0.9019 |
 | Healthy      | 0.8042   | 0.9060   | 0.8774    | 0.7423 | 0.7345 | 0.8959 |
+
+## CITATIONS
+### PBDA Methodology
+```
+@article{wang2022DRseg,
+  title={Anomaly Segmentation in Retinal Images with Poisson-Blending Data Augmentation},
+  author={Hualin Wang, Yuhong Zhou, Jiong Zhang, Jianqin Lei, Dongke Sun, Feng Xu, Xiayu Xu},
+  journal={Medical Image Analysis},
+  year={2022},
+  doi={https://doi.org/10.1016/j.media.2022.102534}
+}
+```
+### Segmentation Models Pytorch
+```
+@misc{Iakubovskii:2019,
+  Author = {Pavel Iakubovskii},
+  Title = {Segmentation Models Pytorch},
+  Year = {2019},
+  Publisher = {GitHub},
+  Journal = {GitHub repository},
+  Howpublished = {\url{https://github.com/qubvel/segmentation_models.pytorch}}
+}
+```
 
