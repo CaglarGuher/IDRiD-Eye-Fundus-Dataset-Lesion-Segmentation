@@ -22,8 +22,16 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
 - 
 - Set the activation function (e.g., sigmoid, relu).
 
-- to see the full list of encoder ,decoder with preferable activation functions check the original repository
+- To see the full list of encoder ,decoder with preferable activation functions check the original repository
   [Segmentation Models Pytorch](https://github.com/qubvel/segmentation_models.pytorch)
+@misc{Iakubovskii:2019,
+  Author = {Pavel Iakubovskii},
+  Title = {Segmentation Models Pytorch},
+  Year = {2019},
+  Publisher = {GitHub},
+  Journal = {GitHub repository},
+  Howpublished = {\url{https://github.com/qubvel/segmentation_models.pytorch}}
+}
 - Adjust other parameters like batch size, epochs, learning rate, and weight decay as needed.
 
 ### Step 4: Run the Code
@@ -42,6 +50,7 @@ python task_runner.py
 - The loss function for the project is Binary Cross Entropy (BCE) loss, and the optimizer is Adam with weight decay.
 ## Modeling With Pbda Method
 will be added soon
+
 
 
 
