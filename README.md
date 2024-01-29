@@ -19,7 +19,11 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
 - Specify the lesion type to work with (e.g., microaneurysm: `ma`, hard exudate: `ex`, soft exudate: `se`, hemorrhage: `he`).
 - Choose the encoder-decoder model to use (e.g., Unetplusplus with VGG19 as the encoder).
 - Decide whether to freeze all encoder layers during training (set to `True` to freeze).
+- 
 - Set the activation function (e.g., sigmoid, relu).
+
+- to see the full list of encoder ,decoder with preferable activation functions check:
+- [segmentation models pytorch]([Link to Source](https://github.com/qubvel/segmentation_models.pytorch))
 - Adjust other parameters like batch size, epochs, learning rate, and weight decay as needed.
 
 ### Step 4: Run the Code
