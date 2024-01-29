@@ -1,5 +1,5 @@
 ## Project Setup Guide
-
+## Modeling Without Pbda Method
 ### Step 1: Download Dataset
 - Download the dataset for the project from [this link](https://drive.google.com/drive/folders/1hDovmY747CMykCM-6u_WOz2gZxoYWDH_?usp=drive_link).
 
@@ -36,7 +36,8 @@ python task_runner.py
 ### Step 6: Additional Notes
 - If you've run the code once with the same image type and cropping size, you can set `prepare_data_step` to `False` to save time.
 - The loss function for the project is Binary Cross Entropy (BCE) loss, and the optimizer is Adam with weight decay.
-
+## Modeling With Pbda Method
+will be added soon
 
 
 
