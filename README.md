@@ -1,3 +1,62 @@
+## Project Setup Guide
+
+### Step 1: Download Dataset
+- Download the dataset for the project from [this link](https://drive.google.com/drive/folders/1hDovmY747CMykCM-6u_WOz2gZxoYWDH_?usp=drive_link).
+
+### Step 2: Clone Repository
+- Open your terminal and run the following command to clone the project repository:
+
+
+git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segmentation.git
+
+### Step 3: Configure `task_runner.py`
+- Navigate to the `task_runner.py` file in the cloned repository.
+- Modify the following settings in the file:
+- Change the dataset root to the folder you downloaded and named "square format".
+- Choose whether to run the script with the preprocessed dataset (set to `True`) or test the preprocessed version (also set to `True`, but not both).
+- Adjust the cropping size (e.g., 576x576) and stride (ensure it is divisible by the original dataset size, 3456x3456).
+- Set the black ratio to determine the percentage of cropped images with black to delete (1 means delete every cropped image with black, which can improve model performance).
+- Specify the lesion type to work with (e.g., microaneurysm: `ma`, hard exudate: `ex`, soft exudate: `se`, hemorrhage: `he`).
+- Choose the encoder-decoder model to use (e.g., Unetplusplus with VGG19 as the encoder).
+- Decide whether to freeze all encoder layers during training (set to `True` to freeze).
+- Set the activation function (e.g., sigmoid, relu).
+- Adjust other parameters like batch size, epochs, learning rate, and weight decay as needed.
+
+### Step 4: Run the Code
+- Once the configuration is complete, run the script by executing the following command in your terminal:
+python task_runner.py
+
+
+### Step 5: Review Output
+- After the script completes, check the `out` folder for the results.
+- You'll find mismatched images, models, and prediction arrays.
+- Mismatched images are displayed with green representing True Positives (TP), red representing Ground Truth, and blue representing False Positives (FP).
+
+### Step 6: Additional Notes
+- If you've run the code once with the same image type and cropping size, you can set `prepare_data_step` to `False` to save time.
+- The loss function for the project is Binary Cross Entropy (BCE) loss, and the optimizer is Adam with weight decay.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## EXPLANATION OF THE DISEASE
 
 Diabetic retinopathy (DR) is a leading cause of blindness in adults due to diabetes, affecting over 400 million people worldwide. Early diagnosis through fundus photography is crucial for effective treatment. However, there's inconsistency among specialists in diagnosing DR due to the lack of specific criteria for classifying its stages.

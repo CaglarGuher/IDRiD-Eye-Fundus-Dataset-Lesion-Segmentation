@@ -10,16 +10,16 @@ model_conf = {}
 training_conf = {}
 augment_conf = {}
 
-datasets_root = "/content/square"
+datasets_root = "C:/Users/PC/Desktop/Square_Format"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
 dataset_conf['PBDA']              = False
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 1152
-dataset_conf['stride']            = 1152
-dataset_conf['black_ratio']       = 100
+dataset_conf['crop_size']         = 576
+dataset_conf['stride']            = 576
+dataset_conf['black_ratio']       = 1
 dataset_conf['denoising_size']    = 4096
 dataset_conf['resolution']        = 0
 dataset_conf['data']              = "se"
@@ -36,7 +36,7 @@ model_conf['freeze_encoder']    = False
 model_conf['activation']        = "sigmoid"
 
 training_conf['batch_size'] = 2
-training_conf['epoch'] =1
+training_conf['epoch'] =4
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 

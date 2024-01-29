@@ -6,6 +6,7 @@ from train_test_val_initialize import *
 from utils import *
 import wandb
 
+
 torch.manual_seed(0)
 
 
@@ -19,6 +20,7 @@ def main_task(task_config, steps, device):
     training_conf = task_config['training_conf']
     augment_conf = task_config['augment_conf']
     # start a new wandb run to track this script
+    '''
     wandb.init(
         # set the wandb project where this run will be logged
         project="ret-seg-tuning1a",
@@ -28,7 +30,7 @@ def main_task(task_config, steps, device):
         # track hyperparameters and run metadata
         config = {**dataset_conf, **model_conf, **training_conf, **augment_conf}
     )
-    
+    '''    
 
     
     if prepapre_data_step:
@@ -89,5 +91,4 @@ def main_task(task_config, steps, device):
     if test_step:
         test_model2(model, device, model_conf, dataset_conf, log_dir)
 
-    wandb.finish()
-
+#    wandb.finish()

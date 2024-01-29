@@ -85,8 +85,8 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
     if freeze_encoder:
         for param in model.encoder.parameters():
             param.requires_grad = False
-        optimizer = torch.optim.Adam([
-            dict(params=model.decoder.parameters(), lr=lr)
+        optimizer = torch.optim.AdamW([
+            dict(params=model.decoder.parameters(), lr=lr,weight_decay = weight_decay)
         ])
     else:
         optimizer = torch.optim.Adam([
@@ -122,7 +122,7 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
         train_logs = train_epoch.run(train_loader)
         valid_logs = valid_epoch.run(valid_loader)
 
-        wandb.log(wandb_epoch_log(train_logs, valid_logs, {"lr": optimizer.param_groups[0]["lr"]}))
+        #wandb.log(wandb_epoch_log(train_logs, valid_logs, {"lr": optimizer.param_groups[0]["lr"]}))
 
         if max_iou_score > valid_logs['weighted_combination_loss']:
             max_iou_score = valid_logs['weighted_combination_loss']
@@ -176,9 +176,9 @@ def test_model2(model, device, model_conf, dataset_conf, log_dir):
     metrics_caglar = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"pred_masks_caglar_{dataset_conf['data']}")
     logging.info("Metrics calculation completed successfully.")
 
-    wandb.log(wandb_final_log(auc_pr_caglar=auc_pr_result_paper_caglar,metrics_caglar=metrics_caglar))
+    #wandb.log(wandb_final_log(auc_pr_caglar=auc_pr_result_paper_caglar,metrics_caglar=metrics_caglar))
     # Save results in a json file
-    results = { "auc_pr_caglar":auc_pr_result_paper_caglar,"metrics_caglar":metrics_caglar}
+    results = { "auc_pr":auc_pr_result_paper_caglar,"metrics":metrics_caglar}
     json_file_path = os.path.join(log_dir, 'results.json')
     with open(json_file_path, 'w') as json_file:
         json.dump(results, json_file, indent=4)

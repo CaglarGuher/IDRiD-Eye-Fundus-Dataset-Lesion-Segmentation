@@ -771,7 +771,7 @@ def calculate_save_latest_pred_and_prob(dir_img,out_pred,out_prob,model,device,s
 
     imgs = natsorted(os.listdir(dir_img))
 
-    for img in tqdm(imgs,desc ="predicting masks with caglar method"):
+    for img in tqdm(imgs,desc ="predicting masks"):
         image_path = os.path.join(dir_img, img)
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -783,7 +783,7 @@ def calculate_save_latest_pred_and_prob(dir_img,out_pred,out_prob,model,device,s
         output_path_probs = os.path.join(out_prob, f"{img}_probs.npy")
         np.save(output_path_probs, prob)
         binary_image.save(output_path_mask)
-    print("caglar predictions and probabilities are saved")
+    print(" predictions and probabilities are saved")
 
 def unpad_image(padded_image, original_size):
     target_height, target_width = padded_image.shape[:2]
