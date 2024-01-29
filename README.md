@@ -6,9 +6,9 @@
 ### Step 2: Clone Repository
 - Open your terminal and run the following command to clone the project repository:
 
-
+```python
 git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segmentation.git
-
+```
 ### Step 3: Configure `task_runner.py`
 - Navigate to the `task_runner.py` file in the cloned repository.
 - Modify the following settings in the file:
@@ -24,9 +24,10 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
 
 ### Step 4: Run the Code
 - Once the configuration is complete, run the script by executing the following command in your terminal:
+
+```python
 python task_runner.py
-
-
+```
 ### Step 5: Review Output
 - After the script completes, check the `out` folder for the results.
 - You'll find mismatched images, models, and prediction arrays.
