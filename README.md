@@ -24,6 +24,8 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
 
 - To see the full list of encoder ,decoder with preferable activation functions check the original repository
   [Segmentation Models Pytorch](https://github.com/qubvel/segmentation_models.pytorch)
+
+```
 @misc{Iakubovskii:2019,
   Author = {Pavel Iakubovskii},
   Title = {Segmentation Models Pytorch},
@@ -32,6 +34,7 @@ git clone https://github.com/CaglarGuher/IDRiD-Eye-Fundus-Dataset-Lesion-Segment
   Journal = {GitHub repository},
   Howpublished = {\url{https://github.com/qubvel/segmentation_models.pytorch}}
 }
+```
 - Adjust other parameters like batch size, epochs, learning rate, and weight decay as needed.
 
 ### Step 4: Run the Code
