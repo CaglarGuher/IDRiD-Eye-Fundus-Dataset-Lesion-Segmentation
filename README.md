@@ -83,15 +83,15 @@ Diabetic retinopathy (DR) is a leading cause of blindness in adults due to diabe
 
 ### MICROANEURYSMS
 
-Microaneurysms are the earliest signs of DR, appearing as small, round, dark red dots. They can be up to 125 micrometers in size, smaller than the thickest blood vessels. See Figure 3 for an example.
+Microaneurysms are the earliest signs of DR, appearing as small, round, dark red dots. They can be up to 125 micrometers in size, smaller than the thickest blood vessels.
 
 ### HEMORRHAGES
 
-Hemorrhages result from the rupture of microaneurysms or blood vessels, causing bleeding. They are usually larger than microaneurysms and vary in shape. Unlike microaneurysms, they may not have sharp borders or colors. See Figure 4 for an example.
+Hemorrhages result from the rupture of microaneurysms or blood vessels, causing bleeding. They are usually larger than microaneurysms and vary in shape. Unlike microaneurysms, they may not have sharp borders or colors.
 
 ### EXUDATES
 
-Exudates refer to the leakage of fluids, proteins, and other substances from retinal blood vessels. There are various types, including hard exudates and cotton wool spots. Hard exudates appear as small, yellow-white deposits, while cotton wool spots are cloud-like, fuzzy, white, or gray lesions observed in the retina. See Figure 5 for examples.
+Exudates refer to the leakage of fluids, proteins, and other substances from retinal blood vessels. There are various types, including hard exudates and cotton wool spots. Hard exudates appear as small, yellow-white deposits, while cotton wool spots are cloud-like, fuzzy, white, or gray lesions observed in the retina.
 
 ## DIABETIC RETINOPATHY STAGES
 
@@ -130,7 +130,7 @@ Table 1 presents results of studies on the IDRiD dataset, showing AUPR for vario
 
 ### PROJECT
 
-Preprocessing operations, shown in Figures 8 and 9, are used.
+Preprocessing operations
 
 #### NOISE REDUCTION
 
@@ -153,7 +153,7 @@ The sliding window technique is then applied with a specified overlap to augment
 
 #### CENTER MERGE ALGORITHM
 
-Patches created by sliding a window over the image were merged to form a complete prediction image. The center merge algorithm, shown in Figure 5.3, used only the center region of each patch for composition.
+Patches created by sliding a window over the image were merged to form a complete prediction image. The center merge algorithm  used only the center region of each patch for composition.
 
 The model's edge detection is weaker due to partial lesions at the edges, which affects pixel adjacency and lesion structure. To address this, only the center part of the patches was used.
 
