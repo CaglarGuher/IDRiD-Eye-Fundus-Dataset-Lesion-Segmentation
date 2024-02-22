@@ -70,6 +70,8 @@ will be added soon
 
 Diabetic retinopathy (DR) is a leading cause of blindness in adults due to diabetes, affecting over 400 million people worldwide. Early diagnosis through fundus photography is crucial for effective treatment. However, there's inconsistency among specialists in diagnosing DR due to the lack of specific criteria for classifying its stages.
 ![Image Alt Text](images/inconsistency.jpg)
+
+
 Figure Caption: The table shows the inconsistency for spesific DR stages.
 
 
