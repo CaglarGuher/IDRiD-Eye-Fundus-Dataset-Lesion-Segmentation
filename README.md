@@ -103,7 +103,7 @@ DR has two main stages: proliferative and non-proliferative, with the non-prolif
 4. **PDR (Proliferative Diabetic Retinopathy):** The most severe stage, characterized by serious vessel damage and the formation of abnormal new vessels. This stage can lead to serious complications requiring urgent medical intervention.
 
  
-![Image Alt Text](images/stages of dr.png)
+![Image Alt Text](images/stagesofdr.png)
 
 Stages of DR disease can be seen here.
 
