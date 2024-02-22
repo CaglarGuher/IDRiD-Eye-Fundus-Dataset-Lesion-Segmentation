@@ -151,7 +151,6 @@ Table 1 presents results of studies on the IDRiD dataset, showing AUPR for vario
 
 ### PROJECT
 
-Preprocessing operations
 
 #### NOISE REDUCTION
 
