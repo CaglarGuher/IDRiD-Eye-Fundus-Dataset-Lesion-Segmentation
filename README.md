@@ -72,7 +72,7 @@ Diabetic retinopathy (DR) is a leading cause of blindness in adults due to diabe
 ![Image Alt Text](images/inconsistency.jpg)
 
 
-Figure Caption: The table shows the inconsistency for spesific DR stages.
+The table shows the inconsistency for spesific DR stages.
 
 
 ### MICROANEURYSMS
@@ -86,6 +86,9 @@ Hemorrhages result from the rupture of microaneurysms or blood vessels, causing 
 ### EXUDATES
 
 Exudates refer to the leakage of fluids, proteins, and other substances from retinal blood vessels. There are various types, including hard exudates and cotton wool spots. Hard exudates appear as small, yellow-white deposits, while cotton wool spots are cloud-like, fuzzy, white, or gray lesions observed in the retina.
+![Image Alt Text](images/ma_he_se_ex.jpg)
+
+All lesions can be seen here.
 
 ## DIABETIC RETINOPATHY STAGES
 
@@ -95,6 +98,8 @@ DR has two main stages: proliferative and non-proliferative, with the non-prolif
 2. **Moderate NPDR:** More pronounced vessel damage, with increased narrowing and deposits on the retinal surface. Vision blurring and other symptoms may occur, and treatment involves monitoring and improved diabetes control.
 3. **Severe NPDR:** Significant vessel damage leading to reduced eye nourishment. Bleeding and yellow spots on the retina become more prominent. Without treatment, vision problems can become permanent.
 4. **PDR (Proliferative Diabetic Retinopathy):** The most severe stage, characterized by serious vessel damage and the formation of abnormal new vessels. This stage can lead to serious complications requiring urgent medical intervention.
+
+   
 
 ## POPULAR SEGMENTATION MODELS FOR BIOMEDICAL IMAGES
 
