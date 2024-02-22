@@ -89,7 +89,7 @@ Hemorrhages result from the rupture of microaneurysms or blood vessels, causing 
 
 Exudates refer to the leakage of fluids, proteins, and other substances from retinal blood vessels. There are various types, including hard exudates and cotton wool spots. Hard exudates appear as small, yellow-white deposits, while cotton wool spots are cloud-like, fuzzy, white, or gray lesions observed in the retina.
 
-![Image Alt Text](images/ma_he_se_ex.jpg)
+![Image Alt Text](images/ma_he_se_ex.PNG)
 
 All lesions can be seen here.
 
@@ -102,15 +102,34 @@ DR has two main stages: proliferative and non-proliferative, with the non-prolif
 3. **Severe NPDR:** Significant vessel damage leading to reduced eye nourishment. Bleeding and yellow spots on the retina become more prominent. Without treatment, vision problems can become permanent.
 4. **PDR (Proliferative Diabetic Retinopathy):** The most severe stage, characterized by serious vessel damage and the formation of abnormal new vessels. This stage can lead to serious complications requiring urgent medical intervention.
 
-   
+ 
+![Image Alt Text](images/stages of dr.png)
+
+Stages of DR disease can be seen here.
+
 
 ## POPULAR SEGMENTATION MODELS FOR BIOMEDICAL IMAGES
 
 1. **UNet:** Known for its encoder-decoder structure, capturing hierarchical features using convolutional and pooling layers. Skip connections preserve detailed information.
+
+![Image Alt Text](images/1_f7YOaE4TWubwaFF7Z1fzNw.png)
+
+Unet Architecture.
+
+
+
+
+
 2. **DeepLab:** Uses dilated convolutions and atrous spatial pyramid pooling (ASPP) to capture multi-scale features. Variants like DeepLabv3 enhance its capabilities.
 3. **FCN (Fully Convolutional Networks):** Composed of convolutional layers, preserving spatial information throughout the network.
 4. **Mask R-CNN:** Originally for object detection, includes a mask prediction branch for pixel-level segmentation.
 5. **UNet++:** Extends UNet with nested skip pathways for improved feature capture.
+
+
+![Image Alt Text](images/1_ExIkm6cImpPgpetFW1kwyQ.png)
+
+UnetPlusPlus Architecture.
+
 6. **Attention U-Net:** Incorporates attention mechanisms to focus on specific regions of the image.
 7. **ResUNet:** Combines UNet with residual connections from ResNet, enabling deeper networks.
 
@@ -136,13 +155,31 @@ Preprocessing operations
 
 #### NOISE REDUCTION
 
-The BSRGAN model is used for noise reduction, producing efficient results.
+The BSRGAN model is used for noise reduction, producing efficient results.All the possible candidates for the noise reduction models (upscale models) is tested using Chainner.For more detailed information check the original reporsitory.
+ [ChaiNNer](https://github.com/chaiNNer-org/chaiNNer)
 
+![Image Alt Text](images/chaiiner.jpg)
 
+Testing different upscale images using ChaiNNer
 
 #### CROPPING AND SLIDING WINDOW TECHNIQUES
 
 To address the limited number of annotated images in medical datasets like retinal images, a cropping strategy is used to resize the images into 576x576-pixel patches, balancing dataset size and information content. in order to crop the images by 576x576 the images are reshaped in to 3456x3456 with adding black borders as it can be seen in.
+
+
+
+![Image Alt Text](images/IMG-20240222-WA0028.jpg)
+
+Reshaping and adding black border 
+
+
+![Image Alt Text](images/crop.jpg)
+
+Cropping images into 576*576
+
+
+
+
 
 #### SLIDING WINDOW TECHNIQUE
 
@@ -159,9 +196,23 @@ Patches created by sliding a window over the image were merged to form a complet
 
 The model's edge detection is weaker due to partial lesions at the edges, which affects pixel adjacency and lesion structure. To address this, only the center part of the patches was used.
 
+
+![Image Alt Text](images/method.PNG)
+
+Explanation of Centre Merge Algorithm
+
+
+
+
 #### PBDA (POISSON BLEND DATA AUGMENTATION) METHOD
 
 The PBDA method seamlessly integrates synthetic lesions into retinal images, enhancing dataset diversity. Small lesion images with masks are placed in various positions within the retinal images, and the Poisson blending method is used to ensure realistic integration. Random transformations are applied to the synthetic lesions to increase diversity and prevent overfitting. This method not only introduces lesions but also creates variations of retinal images, contributing to the model's robustness.
+
+
+![Image Alt Text](images/pbda.PNG)
+
+Generating different fundus images using PBDA method
+
 
 ## Experimental Results
 
