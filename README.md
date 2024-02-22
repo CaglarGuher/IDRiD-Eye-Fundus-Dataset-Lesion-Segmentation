@@ -70,7 +70,7 @@ will be added soon
 
 Diabetic retinopathy (DR) is a leading cause of blindness in adults due to diabetes, affecting over 400 million people worldwide. Early diagnosis through fundus photography is crucial for effective treatment. However, there's inconsistency among specialists in diagnosing DR due to the lack of specific criteria for classifying its stages.
 
-**Shows inconsistency among doctors in assessing DR stages.**
+
 
 ### MICROANEURYSMS
 
@@ -127,7 +127,7 @@ Preprocessing operations
 
 The BSRGAN model is used for noise reduction, producing efficient results.
 
-The examples for the different upscaling models along with the bsrgan is shown in below. The results for eye fundus images can be seen.
+
 
 #### CROPPING AND SLIDING WINDOW TECHNIQUES
 
@@ -154,7 +154,7 @@ The PBDA method seamlessly integrates synthetic lesions into retinal images, enh
 
 ## Experimental Results
 
-During the study, the methods explained in the previous sections were individually tested with isolated experiments. Additionally, each of the 4 lesion types was independently tested, and the results are presented. The effects of cropping, sliding window, preprocessing techniques, noise reduction techniques, the PBDA method, and the use of healthy images for each lesion are listed. The experimental results are presented using the following metrics: Accuracy, Recall, Precision, F1 Score, IoU, and AUC under the precision-recall curve.
+During the study, the methods explained  in the previous sections were individually tested with isolated experiments. Additionally, each of the 4 lesion types was independently tested, and the results are presented. The effects of cropping, sliding window, preprocessing techniques, noise reduction techniques, the PBDA method, and the use of healthy images for each lesion are listed. The experimental results are presented using the following metrics: Accuracy, Recall, Precision, F1 Score, IoU, and AUC under the precision-recall curve.
 
 ### Results for Microaneurysm Class
 
