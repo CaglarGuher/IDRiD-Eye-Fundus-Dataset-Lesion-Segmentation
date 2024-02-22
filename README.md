@@ -88,6 +88,7 @@ Hemorrhages result from the rupture of microaneurysms or blood vessels, causing 
 ### EXUDATES
 
 Exudates refer to the leakage of fluids, proteins, and other substances from retinal blood vessels. There are various types, including hard exudates and cotton wool spots. Hard exudates appear as small, yellow-white deposits, while cotton wool spots are cloud-like, fuzzy, white, or gray lesions observed in the retina.
+
 ![Image Alt Text](images/ma_he_se_ex.jpg)
 
 All lesions can be seen here.
