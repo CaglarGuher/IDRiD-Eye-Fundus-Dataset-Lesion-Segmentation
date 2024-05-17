@@ -18,6 +18,7 @@ def make_log_dir(parent_path ="out"):
     os.makedirs(parent_path, exist_ok =True)
     current_date = datetime.datetime.now()
     dirname = current_date.strftime("%Y_%B_%d-%H_%M_%S")
+    
     path = make_subfolder(dirname,parent_path)
     return path
 

@@ -12,7 +12,7 @@ from mlops_utils import wandb_epoch_log, wandb_final_log
 from utils import (auc_pr_folder_calculation, auc_pr_paper_calculation,
                    calculate_metrics, merge_cropped_arrays,
                    merge_cropped_images, plot_save_mismatches,
-                   predict_and_save_folder,calculate_save_latest_pred_and_prob)
+                   predict_and_save_folder,calculate_save_latest_pred_and_prob,predict_and_save_folder,process_arrays)
 from visualiser import plot_pr_curve
 from loss import WeightedCombinationLoss,FocalLoss
 
@@ -138,42 +138,82 @@ def train_validate(epoch, lr, weight_decay, model, device, train_loader, valid_l
     return model
 
 
-def test_model2(model, device, model_conf, dataset_conf, log_dir):
+
+def test_model_GLOBAL(model, device, model_conf, dataset_conf, log_dir):
+    logging.info(f"Testing model: {log_dir}")
+    logging.info("Caglar process  started.")
+    predict_and_save_folder(input_folder=dataset_conf["train_image_dir"],
+                            output_maskfolder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_train_W",
+                            output_prob_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_train_W",
+                            best_model=model,device=device,encoder=model_conf['encoder'],
+                            encoder_weight=model_conf['encoder_weight'],
+                            resolution=dataset_conf["resolution"])
+    predict_and_save_folder(input_folder=dataset_conf["test_image_dir"],
+    output_maskfolder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_W",
+    output_prob_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_w",
+    best_model=model,device=device,encoder=model_conf['encoder'],
+    encoder_weight=model_conf['encoder_weight'],
+    resolution=dataset_conf["resolution"])
+    process_arrays(input_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_train_W",
+                   output_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_train",
+                   old_shape=dataset_conf["resolution"],
+                   new_shape=dataset_conf["crop_size"])
+    process_arrays(input_folder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_train_W",
+                   output_folder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_train",
+                   old_shape=dataset_conf["resolution"],
+                   new_shape=dataset_conf["crop_size"])
+    process_arrays(input_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_W",
+                   output_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}",
+                   old_shape=dataset_conf["resolution"],
+                   new_shape=dataset_conf["crop_size"])
+    process_arrays(input_folder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_W",
+                   output_folder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}",
+                   old_shape=dataset_conf["resolution"],
+                   new_shape=dataset_conf["crop_size"])
+
+
+    logging.info("Caglar process finished successfully.") 
+    plot_save_mismatches(log_dir+f"pred_masks_caglar_{dataset_conf['data']}",
+                          os.path.join(dataset_conf["test_mask_dir"],
+                                       dataset_conf['data']), 
+                                       save_dir=log_dir,mismatched_images="mismatched_images_caglar")
+    
+
+    logging.info("Plotting and saving mismatches completed successfully.")
+
+def test_model_LOCAL(model, device, model_conf, dataset_conf, log_dir):
 
     logging.info(f"Testing model: {log_dir}")
     logging.info("Caglar process  started.")
-    calculate_save_latest_pred_and_prob(dir_img=dataset_conf["test_image_dir"],out_pred=log_dir+f"pred_masks_caglar_{dataset_conf['data']}",out_prob=log_dir+f"pred_probs_caglar_{dataset_conf['data']}",model=model,device=device,stride=dataset_conf['stride'],encoder=model_conf['encoder'],encoder_weight=model_conf['encoder_weight'])
+    calculate_save_latest_pred_and_prob(dir_img=dataset_conf["test_image_dir"],
+                                        out_pred=log_dir+f"pred_masks_caglar_{dataset_conf['data']}",
+                                        out_prob=log_dir+f"pred_probs_caglar_{dataset_conf['data']}",
+                                        model=model,device=device,stride=dataset_conf['stride'],
+                                        encoder=model_conf['encoder'],encoder_weight=model_conf['encoder_weight'])
+    calculate_save_latest_pred_and_prob(dir_img=dataset_conf["train_image_dir"],
+                                        out_pred=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_train",
+                                        out_prob=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_train",
+                                        model=model,device=device,stride=dataset_conf['stride'],
+                                        encoder=model_conf['encoder'],encoder_weight=model_conf['encoder_weight'])
     logging.info("Caglar process finished successfully.") 
      
-    # First predict and save cropped image prediction masks
     #predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
-    #logging.info("Prediction and saving completed successfully.")
-
-    
-    #logging.info("calculate_save_latest_pred_and_prob completed successfully.")
     #merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
-    #logging.info("Merging cropped images completed successfully.")
-
     #merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
-    #logging.info("Merging cropped arrays completed successfully.")
 
-    plot_save_mismatches(log_dir+f"pred_masks_caglar_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir,mismatched_images="mismatched_images_caglar")
+    plot_save_mismatches(log_dir+f"pred_masks_caglar_{dataset_conf['data']}",
+                          os.path.join(dataset_conf['test_mask_dir'],
+                                       dataset_conf['data']), 
+                                       save_dir=log_dir,mismatched_images="mismatched_images_caglar")
     logging.info("Plotting and saving mismatches completed successfully.")
-    #plot_save_mismatches(log_dir+f"merged_pred_masks_{dataset_conf['data']}", os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), save_dir=log_dir,mismatched_images="mismatched_images")
-    #auc_pr_result = auc_pr_folder_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
-    #logging.info("AUC-PR calculation completed successfully.")
-
-    #auc_pr_result_paper, precision, recall = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
-    auc_pr_result_paper_caglar, precision_caglar, recall_caglar = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"pred_probs_caglar_{dataset_conf['data']}", test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), stride=dataset_conf['stride'])
+    auc_pr_result_paper_caglar, precision_caglar, recall_caglar = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"pred_probs_caglar_{dataset_conf['data']}", 
+                                                                                           test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],
+                                                                                                                      dataset_conf['data']), 
+                                                                                                                      stride=dataset_conf['stride'])
     logging.info("AUC-PR calculation according to paper completed successfully.")
-    #auc_pr_result = auc_pr_result_paper
-
-    
-    #metrics_merged = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"merged_pred_masks_{dataset_conf['data']}")
-
-    #metrics_cropped = calculate_metrics(os.path.join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']), log_dir+"pred_masks")
-
-    metrics_caglar = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],dataset_conf['data']), log_dir+f"pred_masks_caglar_{dataset_conf['data']}")
+    metrics_caglar = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],
+                                                    dataset_conf['data']), 
+                                                    log_dir+f"pred_masks_caglar_{dataset_conf['data']}")
     logging.info("Metrics calculation completed successfully.")
 
     #wandb.log(wandb_final_log(auc_pr_caglar=auc_pr_result_paper_caglar,metrics_caglar=metrics_caglar))

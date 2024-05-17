@@ -783,7 +783,10 @@ def calculate_save_latest_pred_and_prob(dir_img,out_pred,out_prob,model,device,s
         output_path_probs = os.path.join(out_prob, f"{img}_probs.npy")
         np.save(output_path_probs, prob)
         binary_image.save(output_path_mask)
-    print(" predictions and probabilities are saved")
+    print("predictions and probabilities are saved")
+
+
+
 
 def unpad_image(padded_image, original_size):
     target_height, target_width = padded_image.shape[:2]
@@ -915,3 +918,30 @@ def get_augmentations():
         albu.ShiftScaleRotate(shift_limit = 0.1),
     ]
     return albu.Compose(train_transform)
+
+def resize_array(array, new_shape):
+    # Use cv2 to resize the array
+    resized_array = cv2.resize(array, (new_shape,new_shape), interpolation=cv2.INTER_CUBIC)
+    return resized_array
+
+def process_arrays(input_folder, output_folder,old_shape, new_shape):
+    # Create the output folder if it doesn't exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    
+    # Loop through all files in the input folder
+    for filename in os.listdir(input_folder):
+        if filename.endswith('.npy'):  # assuming arrays are saved in .npy format
+            file_path = os.path.join(input_folder, filename)
+            array = np.load(file_path)
+            
+            if array.shape == (old_shape, old_shape):  # ensure the shape matches
+                resized_array = resize_array(array, new_shape)
+                output_path = os.path.join(output_folder, filename)
+                np.save(output_path, resized_array)
+                print(f"Processed and saved: {output_path}")
+            else:
+                print(f"Skipping {filename}: shape mismatch")
+    
+    # Delete the input folder after processing
+    shutil.rmtree(input_folder)
