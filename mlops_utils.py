@@ -52,7 +52,6 @@ def check_masks_dir_format(mask_dir):
     
     for lesion in lesion_folders:
         if not os.path.isdir(os.path.join(mask_dir, lesion)):
-            print("Lesion folder not found: ", lesion)
             return False
     return True
 

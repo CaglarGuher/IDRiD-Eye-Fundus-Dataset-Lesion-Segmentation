@@ -924,7 +924,7 @@ def resize_array(array, new_shape):
     resized_array = cv2.resize(array, (new_shape,new_shape), interpolation=cv2.INTER_CUBIC)
     return resized_array
 
-def process_arrays(input_folder, output_folder,old_shape, new_shape):
+def process_arrays(input_folder, output_folder, old_shape, new_shape):
     # Create the output folder if it doesn't exist
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -939,9 +939,17 @@ def process_arrays(input_folder, output_folder,old_shape, new_shape):
                 resized_array = resize_array(array, new_shape)
                 output_path = os.path.join(output_folder, filename)
                 np.save(output_path, resized_array)
-                print(f"Processed and saved: {output_path}")
-            else:
-                print(f"Skipping {filename}: shape mismatch")
+                
+        
+        if filename.endswith('.png'):  # assuming images are saved in .png format
+            file_path = os.path.join(input_folder, filename)
+            image = Image.open(file_path)
+            
+            if image.size == (old_shape, old_shape):  # ensure the shape matches
+                resized_image = image.resize((new_shape, new_shape))
+                output_path = os.path.join(output_folder, filename)
+                resized_image.save(output_path)
+
     
     # Delete the input folder after processing
     shutil.rmtree(input_folder)

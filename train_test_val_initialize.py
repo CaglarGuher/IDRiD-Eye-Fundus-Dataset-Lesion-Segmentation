@@ -150,7 +150,7 @@ def test_model_GLOBAL(model, device, model_conf, dataset_conf, log_dir):
                             resolution=dataset_conf["resolution"])
     predict_and_save_folder(input_folder=dataset_conf["test_image_dir"],
     output_maskfolder=log_dir+f"pred_masks_caglar_{dataset_conf['data']}_W",
-    output_prob_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_w",
+    output_prob_folder=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_W",
     best_model=model,device=device,encoder=model_conf['encoder'],
     encoder_weight=model_conf['encoder_weight'],
     resolution=dataset_conf["resolution"])
@@ -174,12 +174,29 @@ def test_model_GLOBAL(model, device, model_conf, dataset_conf, log_dir):
 
     logging.info("Caglar process finished successfully.") 
     plot_save_mismatches(log_dir+f"pred_masks_caglar_{dataset_conf['data']}",
-                          os.path.join(dataset_conf["test_mask_dir"],
+                          os.path.join(dataset_conf['test_mask_dir'],
                                        dataset_conf['data']), 
                                        save_dir=log_dir,mismatched_images="mismatched_images_caglar")
-    
-
     logging.info("Plotting and saving mismatches completed successfully.")
+    logging.info("AUC-PR calculation has started.")
+    auc_pr_result_paper_caglar,_,_= auc_pr_paper_calculation(pred_mask_dir=log_dir+f"pred_probs_caglar_{dataset_conf['data']}", 
+                                                                                           test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],
+                                                                                                                      dataset_conf['data']), 
+                                                                                                                      stride=dataset_conf['stride'])
+    logging.info("AUC-PR calculation  completed successfully.")
+    logging.info("Metrics calculation has started.")
+    metrics_caglar = calculate_metrics(os.path.join(dataset_conf['test_mask_dir'],
+                                                    dataset_conf['data']), 
+                                                    log_dir+f"pred_masks_caglar_{dataset_conf['data']}")
+    logging.info("Metrics calculation completed successfully.")
+
+    #wandb.log(wandb_final_log(auc_pr_caglar=auc_pr_result_paper_caglar,metrics_caglar=metrics_caglar))
+    # Save results in a json file
+    results = { "auc_pr":auc_pr_result_paper_caglar,"metrics":metrics_caglar}
+    json_file_path = os.path.join(log_dir, 'results.json')
+    with open(json_file_path, 'w') as json_file:
+        json.dump(results, json_file, indent=4)
+    logging.info("Results saved successfully.")
 
 def test_model_LOCAL(model, device, model_conf, dataset_conf, log_dir):
 
@@ -195,18 +212,13 @@ def test_model_LOCAL(model, device, model_conf, dataset_conf, log_dir):
                                         out_prob=log_dir+f"pred_probs_caglar_{dataset_conf['data']}_train",
                                         model=model,device=device,stride=dataset_conf['stride'],
                                         encoder=model_conf['encoder'],encoder_weight=model_conf['encoder_weight'])
-    logging.info("Caglar process finished successfully.") 
-     
-    #predict_and_save_folder(input_folder=dataset_conf['test_image_dir_cropped'], output_maskfolder=log_dir+"pred_masks", output_prob_folder=log_dir+"pred_probs", encoder=model_conf['encoder'], encoder_weight=model_conf['encoder_weight'], best_model=model, device=device, resolution=dataset_conf['resolution'])
-    #merge_cropped_images(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_masks", output_dir=log_dir+f"merged_pred_masks_{dataset_conf['data']}")
-    #merge_cropped_arrays(3456, 3456, cropped_res=dataset_conf['crop_size'], stride=dataset_conf['stride'], input_dir=log_dir+"pred_probs", output_dir=log_dir+f"merged_pred_probs_{dataset_conf['data']}")
-
+    logging.info("Caglar process finished successfully.")  
     plot_save_mismatches(log_dir+f"pred_masks_caglar_{dataset_conf['data']}",
                           os.path.join(dataset_conf['test_mask_dir'],
                                        dataset_conf['data']), 
                                        save_dir=log_dir,mismatched_images="mismatched_images_caglar")
     logging.info("Plotting and saving mismatches completed successfully.")
-    auc_pr_result_paper_caglar, precision_caglar, recall_caglar = auc_pr_paper_calculation(pred_mask_dir=log_dir+f"pred_probs_caglar_{dataset_conf['data']}", 
+    auc_pr_result_paper_caglar,_,_= auc_pr_paper_calculation(pred_mask_dir=log_dir+f"pred_probs_caglar_{dataset_conf['data']}", 
                                                                                            test_mask_dir=os.path.join(dataset_conf['test_mask_dir'],
                                                                                                                       dataset_conf['data']), 
                                                                                                                       stride=dataset_conf['stride'])
@@ -215,9 +227,7 @@ def test_model_LOCAL(model, device, model_conf, dataset_conf, log_dir):
                                                     dataset_conf['data']), 
                                                     log_dir+f"pred_masks_caglar_{dataset_conf['data']}")
     logging.info("Metrics calculation completed successfully.")
-
     #wandb.log(wandb_final_log(auc_pr_caglar=auc_pr_result_paper_caglar,metrics_caglar=metrics_caglar))
-    # Save results in a json file
     results = { "auc_pr":auc_pr_result_paper_caglar,"metrics":metrics_caglar}
     json_file_path = os.path.join(log_dir, 'results.json')
     with open(json_file_path, 'w') as json_file:

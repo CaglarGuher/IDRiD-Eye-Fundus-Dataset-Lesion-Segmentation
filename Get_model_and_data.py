@@ -12,6 +12,31 @@ import random
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
+
+class Global_Local_Dataset(BaseDataset):
+    def __init__(self, array_folder_local, array_folder_global, gt_folder):
+        self.array_fps_local = natsorted([os.path.join(array_folder_local, file) for file in os.listdir(array_folder_local)])
+        self.array_fps_global = natsorted([os.path.join(array_folder_global, file) for file in os.listdir(array_folder_global)])
+        self.gt_fps = natsorted([os.path.join(gt_folder, file) for file in os.listdir(gt_folder)])
+
+    def __getitem__(self, idx):
+        local_array = np.load(self.array_fps_local[idx])
+        global_array = np.load(self.array_fps_global[idx])
+        merged_array = np.stack((local_array, global_array), axis=0)  # Adjust concatenation axis as needed
+        gt_image = cv2.imread(self.gt_fps[idx], cv2.IMREAD_GRAYSCALE)
+        gt_mask = (gt_image > 1).astype('float')
+        return merged_array, gt_mask
+    
+    def __len__(self):
+        return len(self.array_fps_local)
+
+
+
+
+
+
 class Dataset(BaseDataset):
 
     def __init__(

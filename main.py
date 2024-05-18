@@ -64,13 +64,13 @@ def main_task(task_config, steps, device):
                                 model_conf['encoder_weight'],
                                 dataset_conf['val_image_dir_cropped'],
                                 join(dataset_conf['val_mask_dir_cropped'],dataset_conf['data']),
-                                resolution=0)
+                                resolution=dataset_conf['resolution'])
                                 
     test_loader  = get_test_data(model_conf['encoder'],
                                 model_conf['encoder_weight'],
                                 dataset_conf['test_image_dir_cropped'],
                                 join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']),
-                                resolution=0)
+                                resolution=dataset_conf['resolution'])
     
     if train_step:
         if model_conf['pretrained_weights']:
@@ -89,6 +89,10 @@ def main_task(task_config, steps, device):
                                 )
         
     if test_step:
-        test_model2(model, device, model_conf, dataset_conf, log_dir)
+        if dataset_conf["resolution"] == 0:
+            test_model_LOCAL(model, device, model_conf, dataset_conf, log_dir)
+        else:
+            test_model_GLOBAL(model, device, model_conf, dataset_conf, log_dir)
+
 
 #    wandb.finish()

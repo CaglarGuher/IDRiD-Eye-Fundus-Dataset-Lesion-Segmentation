@@ -10,19 +10,19 @@ model_conf = {}
 training_conf = {}
 augment_conf = {}
 
-datasets_root = "C:/Users/PC/Desktop/Square_Format"
+datasets_root = "C:/Users/PC/Desktop/square"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
-dataset_conf['PBDA']              = False
+dataset_conf['PBDA']              = "image_zoom_1_0_1"
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 576
-dataset_conf['stride']            = 576
+dataset_conf['crop_size']         = 3456
+dataset_conf['stride']            = 3456
 dataset_conf['black_ratio']       = 1
 dataset_conf['denoising_size']    = 4096
-dataset_conf['resolution']        = 0
-dataset_conf['data']              = "se"
+dataset_conf['resolution']        = 288
+dataset_conf['data']              = "he"
 ############################################################################################################
 # Derived parameters : Do not change these
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
@@ -35,8 +35,8 @@ model_conf['pretrained_weights']= False
 model_conf['freeze_encoder']    = False
 model_conf['activation']        = "sigmoid"
 
-training_conf['batch_size'] = 2
-training_conf['epoch'] =4
+training_conf['batch_size'] = 4
+training_conf['epoch'] = 1
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 
@@ -48,7 +48,7 @@ task_conf['model_conf'] = model_conf
 task_conf['training_conf'] = training_conf
 task_conf['augment_conf'] = augment_conf
 
-prepare_data_step = True
+prepare_data_step = False
 train_step = True
 test_step = True
 email_step = False
