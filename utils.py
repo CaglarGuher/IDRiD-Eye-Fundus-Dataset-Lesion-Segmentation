@@ -919,10 +919,18 @@ def get_augmentations():
     ]
     return albu.Compose(train_transform)
 
-def resize_array(array, new_shape):
-    # Use cv2 to resize the array
-    resized_array = cv2.resize(array, (new_shape,new_shape), interpolation=cv2.INTER_CUBIC)
-    return resized_array
+def resize_array(array, factor):
+    """
+    Upsample a 2D array by a given factor without interpolation.
+    
+    Parameters:
+    array (np.ndarray): The input array to be upsampled.
+    factor (int): The upsampling factor.
+    
+    Returns:
+    np.ndarray: The upsampled array.
+    """
+    return np.repeat(np.repeat(array, factor, axis=0), factor, axis=1)
 
 def process_arrays(input_folder, output_folder, old_shape, new_shape):
     # Create the output folder if it doesn't exist
@@ -936,7 +944,7 @@ def process_arrays(input_folder, output_folder, old_shape, new_shape):
             array = np.load(file_path)
             
             if array.shape == (old_shape, old_shape):  # ensure the shape matches
-                resized_array = resize_array(array, new_shape)
+                resized_array = resize_array(array, (new_shape/old_shape))
                 output_path = os.path.join(output_folder, filename)
                 np.save(output_path, resized_array)
                 
