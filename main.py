@@ -20,7 +20,7 @@ def main_task(task_config, steps, device):
     training_conf = task_config['training_conf']
     augment_conf = task_config['augment_conf']
     # start a new wandb run to track this script
-    '''
+
     wandb.init(
         # set the wandb project where this run will be logged
         project="ret-seg-tuning1a",
@@ -30,7 +30,6 @@ def main_task(task_config, steps, device):
         # track hyperparameters and run metadata
         config = {**dataset_conf, **model_conf, **training_conf, **augment_conf}
     )
-    '''    
 
     
     if prepapre_data_step:
@@ -44,32 +43,34 @@ def main_task(task_config, steps, device):
         #copy_and_paste_folder("images/test/mask/cropped_ma")
 
 
-        delete_black_masks(dataset_conf['train_image_dir_cropped'],join(dataset_conf['train_mask_dir_cropped'],dataset_conf['data']),threshold=dataset_conf['black_ratio'])
-        delete_black_masks(dataset_conf['val_image_dir_cropped'],join(dataset_conf['val_mask_dir_cropped'],dataset_conf['data']),threshold=dataset_conf['black_ratio'])
+        # delete_black_masks(dataset_conf['train_image_dir_cropped'],join(dataset_conf['train_mask_dir_cropped'],dataset_conf['data']),threshold=dataset_conf['black_ratio'])
+        # delete_black_masks(dataset_conf['val_image_dir_cropped'],join(dataset_conf['val_mask_dir_cropped'],dataset_conf['data']),threshold=dataset_conf['black_ratio'])
 
     
     model,train_loader= initialize_train_val(
                                             batch_size = training_conf['batch_size'],
                                             decoder = model_conf['decoder'],
                                             encoder = model_conf['encoder'],
-                                            encoder_weight= model_conf['encoder_weight'],
-                                            train_image_dir= dataset_conf['train_image_dir_cropped'],
+                                            encoder_weight = model_conf['encoder_weight'],
+                                            train_image_dir = dataset_conf['train_image_dir_cropped'],
                                             train_mask_dir = dataset_conf['train_mask_dir_cropped'],
-                                            resolution= dataset_conf['resolution'],
+                                            resolution = dataset_conf['resolution'],
                                             activation = model_conf['activation'], 
-                                            data = dataset_conf['data']
+                                            lesion_type = dataset_conf['data']
                                             )
     
     val_loader = get_test_data(model_conf['encoder'],
                                 model_conf['encoder_weight'],
                                 dataset_conf['val_image_dir_cropped'],
-                                join(dataset_conf['val_mask_dir_cropped'],dataset_conf['data']),
+                                dataset_conf['test_mask_dir_cropped'],
+                                lesion_type = dataset_conf['data'],
                                 resolution=dataset_conf['resolution'])
                                 
     test_loader  = get_test_data(model_conf['encoder'],
                                 model_conf['encoder_weight'],
                                 dataset_conf['test_image_dir_cropped'],
-                                join(dataset_conf['test_mask_dir_cropped'],dataset_conf['data']),
+                                dataset_conf['test_mask_dir_cropped'],
+                                lesion_type = dataset_conf['data'],
                                 resolution=dataset_conf['resolution'])
     
     if train_step:
@@ -95,4 +96,4 @@ def main_task(task_config, steps, device):
             test_model_GLOBAL(model, device, model_conf, dataset_conf, log_dir)
 
 
-#    wandb.finish()
+    wandb.finish()

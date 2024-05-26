@@ -43,13 +43,18 @@ class Dataset(BaseDataset):
             self,
             images_dir,
             masks_dir,
+            lesion_type,
             augmentation=None,
             preprocessing=None,
     ):
-        self.masks_ids = natsorted(os.listdir(masks_dir))
+        self.masks_ids = natsorted(os.listdir(images_dir)) # every image must have a corresponding mask
         self.augmentation = augmentation
         
-        self.masks_fps = [os.path.join(masks_dir, mask_id) for mask_id in self.masks_ids ]
+        self.masks_fps = []
+        for mask_id in self.masks_ids:
+                self.masks_fps.append([os.path.join(masks_dir, lesion, mask_id) for lesion in lesion_type]) # multi lesion support
+
+        # self.masks_fps = [os.path.join(masks_dir, mask_id) for mask_id in self.masks_ids ] # old single lesion version
         self.images_fps = [os.path.join(images_dir, image_id) for image_id in self.masks_ids]
         self.augmentation = augmentation
         self.preprocessing = preprocessing
@@ -57,8 +62,16 @@ class Dataset(BaseDataset):
     def __getitem__(self, i):
         image = cv2.imread(self.images_fps[i])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(self.masks_fps[i], cv2.IMREAD_GRAYSCALE)
-        mask = (mask > 1).astype('float')
+        masks = []
+        for mask_fp in self.masks_fps[i]:
+            mask = cv2.imread(mask_fp, cv2.IMREAD_GRAYSCALE)
+            mask = (mask > 1).astype('float')
+            masks.append(mask)
+        mask = np.stack(masks)
+        # reshape mask to w h c
+        mask = np.transpose(mask, (1, 2, 0))
+        # mask = cv2.imread(self.masks_fps[i], cv2.IMREAD_GRAYSCALE)
+        # mask = (mask > 1).astype('float')
         # apply augmentations
         if self.augmentation:
             sample = self.augmentation(image=image, mask=mask)
@@ -82,6 +95,7 @@ def get_train_val_data_and_model(encoder,
               batch_size,
               train_image_dir,
               train_mask_dir,
+              lesion_type,
               activation,
               resolution=0):
 
@@ -93,13 +107,14 @@ def get_train_val_data_and_model(encoder,
         encoder_name=encoder,
         encoder_weights=encoder_weight,
         activation=activation,
-    
+        classes=len(lesion_type)
     )
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, encoder_weight)
     
     train_dataset = Dataset(
         train_image_dir,
         train_mask_dir,
+        lesion_type,
         preprocessing=get_preprocessing(preprocessing_fn,resolution),
         augmentation=get_augmentations()
     )
@@ -114,10 +129,11 @@ def get_train_val_data_and_model(encoder,
     return model,train_loader
 
 def get_test_data(encoder,
-              encoder_weight,
-              test_image_dir,
-              test_mask_dir,
-              resolution=0):
+                encoder_weight,
+                test_image_dir,
+                test_mask_dir,
+                lesion_type,
+                resolution=0):
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, encoder_weight)
     
@@ -125,6 +141,7 @@ def get_test_data(encoder,
     test_dataset = Dataset(
         test_image_dir,
         test_mask_dir,
+        lesion_type,
         preprocessing=get_preprocessing(preprocessing_fn,resolution),
         )
 

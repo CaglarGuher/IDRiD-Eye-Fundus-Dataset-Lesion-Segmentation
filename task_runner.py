@@ -3,26 +3,26 @@ import wandb
 from main import main_task
 from mlops_utils import derive_dataset_conf_parameters
 
-device = "cuda"
+device = "cuda:3"
 
 dataset_conf = {}
 model_conf = {}
 training_conf = {}
 augment_conf = {}
 
-datasets_root = "C:/Users/PC/Desktop/square"
+datasets_root = "/home/braincreator/daniel/ademgunesen/square_format/"
 
 dataset_conf['dataset_root']      = datasets_root
 dataset_conf['preprocessed']      = False
 dataset_conf['denoised']          = False
-dataset_conf['PBDA']              = "image_zoom_1_0_1"
+dataset_conf['PBDA']              = False
 dataset_conf['cropped']           = True
-dataset_conf['crop_size']         = 3456
-dataset_conf['stride']            = 3456
-dataset_conf['black_ratio']       = 1
+dataset_conf['crop_size']         = 576 #3456
+dataset_conf['stride']            = 288 #3456
+dataset_conf['black_ratio']       = 0
 dataset_conf['denoising_size']    = 4096
-dataset_conf['resolution']        = 288
-dataset_conf['data']              = "he"
+dataset_conf['resolution']        = 0 #1152
+dataset_conf['data']              = ["ma","ex","he","se"]
 ############################################################################################################
 # Derived parameters : Do not change these
 dataset_conf = derive_dataset_conf_parameters(dataset_conf)
@@ -36,7 +36,7 @@ model_conf['freeze_encoder']    = False
 model_conf['activation']        = "sigmoid"
 
 training_conf['batch_size'] = 4
-training_conf['epoch'] = 1
+training_conf['epoch'] = 2
 training_conf['lr'] = 1e-4
 training_conf['weight_decay'] = 1e-4
 
